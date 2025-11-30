@@ -31,18 +31,17 @@ public class CategoriaDAO {
         return lista;
     }
 
-    public Categoria crearCategoria(String nombreCategoria, boolean activo){
-        String SQL = "INSERT INTO Categorias (nombre_categoria) VALUES(?,?); ";
+    public Categoria crearCategoria(String nombreCategoria){
+        String SQL = "INSERT INTO Categorias (nombre_categoria) VALUES(?); ";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS)){
              pstm.setString(1,nombreCategoria);
-             pstm.setBoolean(2,activo);
             int filas = pstm.executeUpdate();
             if (filas > 0){
                 ResultSet keys = pstm.getGeneratedKeys();
                 if (keys.next()){
                     int idCategoria = keys.getInt(1);
-                    return new Categoria(idCategoria,nombreCategoria,activo);
+                    return new Categoria(idCategoria,nombreCategoria,true);
                 }
             }
         }catch (SQLException e){
