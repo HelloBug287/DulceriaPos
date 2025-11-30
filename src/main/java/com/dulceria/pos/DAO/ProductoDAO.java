@@ -111,11 +111,32 @@ public class ProductoDAO {
         }
         return listaProductos;
     }
-    //public boolean actualizarProducto(Producto producto){
-      //  String SQL = "UPDATE productos SET id_categoria=?, id_marca=?, nombre_producto=?, stock=?, "
-      //  try {
-    //  }
-    //}
+    public boolean actualizarProducto(Producto producto){
+        String SQL = "UPDATE productos" +
+                "SET id_categoria=?," +
+                " id_marca=?," +
+                " nombre_producto=?," +
+                " stock=?," +
+                " unidad_medida=? " +
+                "WHERE id_producto = ?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL)){
+            pstm.setInt(1,producto.getIdCategoria());
+            pstm.setInt(2,producto.getIdMarca());
+            pstm.setString(3,producto.getNombreProducto());
+            pstm.setDouble(4,producto.getStock());
+            pstm.setString(5,producto.getUnidadMedida());
+            pstm.setInt(6,producto.getIdProducto());
+            int filas = pstm.executeUpdate();
+            if (filas > 0){
+                return true;
+            }
+
+      }catch (SQLException e){
+            e.printStackTrace();
+        }
+      return false;
+    }
 }
 
 
