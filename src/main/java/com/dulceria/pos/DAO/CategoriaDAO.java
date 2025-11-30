@@ -20,7 +20,8 @@ public class CategoriaDAO {
             while (rs.next()){
                 int idCategoria = rs.getInt("id_categoria");
                 String nombreCategoria = rs.getString("nombre_categoria");
-                Categoria cat = new Categoria(idCategoria,nombreCategoria);
+                boolean activo = rs.getBoolean("activo");
+                Categoria cat = new Categoria(idCategoria, nombreCategoria, activo);
                 lista.add(cat);
             }
 
@@ -30,17 +31,18 @@ public class CategoriaDAO {
         return lista;
     }
 
-    public Categoria crearCategoria(String nombreCategoria){
-        String SQL = "INSERT INTO Categorias (nombre_categoria) VALUES(?); ";
+    public Categoria crearCategoria(String nombreCategoria, boolean activo){
+        String SQL = "INSERT INTO Categorias (nombre_categoria) VALUES(?,?); ";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS)){
              pstm.setString(1,nombreCategoria);
+             pstm.setBoolean(2,activo);
             int filas = pstm.executeUpdate();
             if (filas > 0){
                 ResultSet keys = pstm.getGeneratedKeys();
                 if (keys.next()){
                     int idCategoria = keys.getInt(1);
-                    return new Categoria(idCategoria,nombreCategoria);
+                    return new Categoria(idCategoria,nombreCategoria,activo);
                 }
             }
         }catch (SQLException e){
@@ -51,12 +53,14 @@ public class CategoriaDAO {
 
     public boolean actualizarCategoria(Categoria cat){
         String SQL = "UPDATE Categorias " +
-                "SET nombre_categoria = ? " +
+                "SET nombre_categoria = ?, " +
+                "activo = ? " +
                 "WHERE id_categoria = ?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL)){
             pstm.setString(1,cat.getNombreCategoria());
-            pstm.setInt(2,cat.getIdCategoria());
+            pstm.setBoolean(2,cat.isActivo());
+            pstm.setInt(3,cat.getIdCategoria());
             int filas = pstm.executeUpdate();
             if (filas > 0){
                 return true;

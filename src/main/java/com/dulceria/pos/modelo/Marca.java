@@ -8,7 +8,7 @@ public class Marca {
     public Marca() {
     }
 
-    public Marca(int idMarca, String nombreMarca) {
+    public Marca(int idMarca, String nombreMarca,boolean activo) {
         this.idMarca = idMarca;
         this.nombreMarca = nombreMarca;
     }

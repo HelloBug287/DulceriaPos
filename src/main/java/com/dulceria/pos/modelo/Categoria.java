@@ -5,7 +5,7 @@ public class Categoria {
     private String nombreCategoria;
     private boolean activo;
 
-    public Categoria(int idCategoria, String nombreCategoria) {
+    public Categoria(int idCategoria, String nombreCategoria,boolean activo) {
         this.idCategoria = idCategoria;
         this.nombreCategoria = nombreCategoria;
     }
