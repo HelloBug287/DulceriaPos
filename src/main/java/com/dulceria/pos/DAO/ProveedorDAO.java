@@ -36,7 +36,7 @@ public class ProveedorDAO {
     }
 
     public Proveedor crearProveedor(String nombreProveedor, String telefono, String email, boolean activo){
-        String SQL = "INSERT INTO Proveedores(nombreProveedor, telefono, email, activo) VALUES(?,?,?,?);";
+        String SQL = "INSERT INTO Proveedores(nombre_proveedor, telefono, email, activo) VALUES(?,?,?,?);";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL,PreparedStatement.RETURN_GENERATED_KEYS)){
             pstm.setString(1,nombreProveedor);
