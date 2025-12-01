@@ -127,11 +127,8 @@ public class VentaDAO {
 //             PreparedStatement pstm = con.prepareStatement(SQL)){
 //            pstm.setDate(1,"fe");
 //
-//    // Listar ventas por fecha (para reportes filtrados)
-//    public List<Venta> listarVentasPorFecha(Date fechaInicio, Date fechaFin)
-//
-//    // Obtener total de ventas del día (para dashboard)
-//    public double obtenerTotalVentasHoy()
+//        }
+//    }
 //
 //    // Contar ventas del día (para dashboard)
 //    public int contarVentasHoy()
