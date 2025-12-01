@@ -83,6 +83,7 @@ public class VentaDAO {
             e.printStackTrace();
         }
         return null;
+
     }
 //
 //    // Listar ventas por fecha (para reportes filtrados)
