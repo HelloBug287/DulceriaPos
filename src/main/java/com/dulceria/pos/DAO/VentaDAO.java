@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 public class VentaDAO {
@@ -33,11 +34,56 @@ public class VentaDAO {
         return null;
     }
 
-//    // Listar todas las ventas (para reportes)
-//    public List<Venta> listarVentas()
-//
-//    // Buscar venta por ID (para ver detalle del ticket)
-//    public Venta buscarPorId(int idVenta)
+      // Listar todas las ventas (para reportes)
+      public List<Venta> listarVentas(){
+        List<Venta> lista = new ArrayList<>();
+        String SQL = "SELECT * FROM Ventas";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL);
+             ResultSet rs = pstm.executeQuery()){
+            while (rs.next()){
+                int idVenta = rs.getInt("id_venta");
+                int idUsuario = rs.getInt("id_usuario");
+                Date fechaHora = rs.getTimestamp("fecha_hora");
+                String metodoPago = rs.getString("metodo_pago");
+                double subtotal = rs.getDouble("subtotal");
+                double impuestos = rs.getDouble("impuestos");
+                double total = rs.getDouble("total");
+                Venta v = new Venta(idVenta,idUsuario,fechaHora,metodoPago,subtotal,impuestos,total);
+                lista.add(v);
+            }
+            return lista;
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    //Buscar venta por ID (para ver detalle del ticket)
+    public Venta buscarPorId(int idVenta){
+        String SQL = "SELECT * FROM Ventas WHERE id_venta = ?";
+        try (Connection con = Conexion.getConnection();
+            PreparedStatement pstm = con.prepareStatement(SQL)){
+            pstm.setInt(1,idVenta);
+            try (ResultSet rs = pstm.executeQuery()){
+                if (rs.next()){
+                    rs.getInt("id_venta");
+                    int idUsuario = rs.getInt("id_usuario");
+                    Date fechaHora = rs.getTimestamp("fecha_hora");
+                    String metodoPago = rs.getString("metodo_pago");
+                    double subtotal = rs.getDouble("subtotal");
+                    double impuestos = rs.getDouble("impuestos");
+                    double total = rs.getDouble("total");
+                    return new Venta(idVenta,idUsuario,fechaHora,metodoPago,subtotal,impuestos,total);
+                }
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 //
 //    // Listar ventas por fecha (para reportes filtrados)
 //    public List<Venta> listarVentasPorFecha(Date fechaInicio, Date fechaFin)
