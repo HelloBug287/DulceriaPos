@@ -11,6 +11,7 @@ public class Marca {
     public Marca(int idMarca, String nombreMarca,boolean activo) {
         this.idMarca = idMarca;
         this.nombreMarca = nombreMarca;
+        this.activo = activo;
     }
 
     public int getIdMarca() {
