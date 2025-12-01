@@ -14,7 +14,7 @@ public class Venta {
     public Venta() {
 
     }
-
+    // con este contructor lo podemos utilizar para listar las ventas y asi poder obtener las Horas
     public Venta(int idVenta, int id_Usuario, Date fechaHora, String metodoPago, double subtotal, double impuestos, double total) {
         this.idVenta = idVenta;
         this.id_Usuario = id_Usuario;
@@ -23,6 +23,16 @@ public class Venta {
         this.subtotal = subtotal;
         this.impuestos = impuestos;
         this.total = total;
+    }
+    public Venta(int idVenta, int idUsuario, String metodoPago, double subtotal, double impuestos, double total) {
+        this.idVenta = idVenta;
+        this.id_Usuario = idUsuario;
+        this.metodoPago = metodoPago;
+        this.subtotal = subtotal;
+        this.impuestos = impuestos;
+        this.total = total;
+
+        //  Creo un nuevo constructor ya que en uno de los metodos de venta DAO si solo utilizo el contructor de arriba me pedira la fecha con este, no se pasa fechaHora porque la BD la crea
     }
 
     public int getIdVenta() {
