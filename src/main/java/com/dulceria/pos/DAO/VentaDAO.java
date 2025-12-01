@@ -85,6 +85,47 @@ public class VentaDAO {
         return null;
 
     }
+
+    // Listar ventas por fecha (para reportes filtrados)
+    public List<Venta> listarVentasPorFecha(Date fechaInicio, Date fechaFin){
+        List<Venta> lista = new ArrayList<>();
+        String SQL = "SELECT * FROM Ventas WHERE DATE(fecha_hora) BETWEEN ? AND ?;";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL)){
+            pstm.setDate(1,new java.sql.Date(fechaInicio.getTime())); //En ambos hacemos un casteo para convertir java.util.Date a java.sql.Date
+            pstm.setDate(2,new java.sql.Date(fechaFin.getTime()));  // En este tambien
+
+            try (ResultSet rs = pstm.executeQuery()){
+                while (rs.next()){
+                    int idVenta = rs.getInt("id_venta");
+                    int idUsuario = rs.getInt("id_usuario");
+                    Date fechaHora = rs.getTimestamp("fecha_hora");
+                    String metodoPago = rs.getString("metodo_pago");
+                    double subtotal = rs.getDouble("subtotal");
+                    double impuestos = rs.getDouble("impuestos");
+                    double total = rs.getDouble("total");
+                    Venta v = new Venta(idVenta,idUsuario,fechaHora,metodoPago,subtotal,impuestos,total);
+                    lista.add(v);
+                }
+                return lista;
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Obtener total de ventas del día (para dashboard)
+//    public double obtenerTotalVentasHoy(){
+//        String SQL = "SELECT SUM(total) AS total_dia " +
+//                "FROM Ventas " +
+//                "WHERE DATE(fecha_hora) = ?;";
+//        try (Connection con = Conexion.getConnection();
+//             PreparedStatement pstm = con.prepareStatement(SQL)){
+//            pstm.setDate(1,"fe");
 //
 //    // Listar ventas por fecha (para reportes filtrados)
 //    public List<Venta> listarVentasPorFecha(Date fechaInicio, Date fechaFin)
