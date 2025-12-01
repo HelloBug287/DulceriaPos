@@ -8,6 +8,7 @@ public class Categoria {
     public Categoria(int idCategoria, String nombreCategoria,boolean activo) {
         this.idCategoria = idCategoria;
         this.nombreCategoria = nombreCategoria;
+        this.activo = activo;
     }
 
     public Categoria() {
