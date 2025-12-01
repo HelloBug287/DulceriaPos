@@ -62,7 +62,7 @@ public class ProveedorDAO {
                 "SET nombre_proveedor =?," +
                 "telefono =?," +
                 "email =?," +
-                "activo =?" +
+                "activo =? " +
                 "WHERE id_proveedor =?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm  = con.prepareStatement(SQL)){
