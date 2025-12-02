@@ -50,14 +50,19 @@ public class ProductoDAO {
              PreparedStatement pstm = con.prepareStatement(SQL);
              ResultSet rs = pstm.executeQuery()) {
             while (rs.next()){
-                int id_producto= rs.getInt("id_producto");
-                int id_categoria = rs.getInt("id_categoria");
-                int id_marca = rs.getInt("id_marca");
-                String nombre_producto = rs.getString("nombre_producto");
+                int idProducto= rs.getInt("id_producto");
+                int idCategoria = rs.getInt("id_categoria");
+                int idMarca = rs.getInt("id_marca");
+                String nombreProducto = rs.getString("nombre_producto");
                 double stock = rs.getDouble("stock");
-                String unidad_medida = rs.getString("unidad_medida");
-                Producto p = new Producto(id_producto,id_categoria,id_marca,nombre_producto,stock,unidad_medida);
+                String unidadMedida = rs.getString("unidad_medida");
+                String nombreCategoria = rs.getString("nombre_categoria");
+                String nombreMarca = rs.getString("nombre_marca");
+                Producto p = new Producto(idProducto,idCategoria,idMarca,nombreProducto,stock,unidadMedida);
+                p.setNombreCategoria(nombreCategoria);
+                p.setNombreMarca(nombreMarca);
                 lista.add(p);
+
             }
         }catch (SQLException e){
             e.printStackTrace();
