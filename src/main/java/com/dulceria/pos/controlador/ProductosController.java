@@ -42,6 +42,42 @@ public class ProductosController {
     //Componentes de busqueda
     private @FXML TextField txtBuscar;
     private @FXML Button btnBuscar;
-    private @FXML ComboBox<String> comboFiltrarCategoria;
+    private @FXML ComboBox<String> comboFiltroCategoria;
+    private @FXML Label lblTotalProductos;
+
+    // Variables de instancia
+    private ProductoDAO productoDAO;
+    private CategoriaDAO categoriaDAO;
+    private MarcaDAO marcaDAO;
+
+    //Variable que nos ayudara en nuestros listeners para saber si es que seleccionamos un producto
+    private Producto productoSeleccionado;
+    private List<Categoria> categoriaLista;
+    private List<Marca> marcaLista;
+
+    @FXML
+    public void initialize(){
+        productoDAO = new ProductoDAO();
+        categoriaDAO = new CategoriaDAO();
+        marcaDAO = new MarcaDAO();
+
+        configurarTabla();
+        cargarProductos();
+        //cargarCategorias();
+        //cargarMarcas();
+        //cargarUnidades();
+        //cargarSeleccionTabla
+
+    }
+
+    public void configurarTabla(){
+        colId.setCellValueFactory(new PropertyValueFactory<>("idProducto"));
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombreProducto"));
+        colCategoria.setCellValueFactory(new PropertyValueFactory<>("nombreCategoria"));
+        colMarca.setCellValueFactory(new PropertyValueFactory<>("nombreMarca"));
+        colStock.setCellValueFactory(new PropertyValueFactory<>("stock"));
+        colUnidad.setCellValueFactory(new PropertyValueFactory<>("unidadMedida"));
+        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+        colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
 }
