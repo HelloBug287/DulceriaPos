@@ -8,6 +8,9 @@ public class Producto {
     private double stock;
     private String unidadMedida;
 
+    private String nombreCategoria;
+    private String nombreMarca;
+
     public Producto() {
     }
 
@@ -68,5 +71,19 @@ public class Producto {
         this.unidadMedida = unidadMedida;
     }
 
+    public String getNombreCategoria() {
+        return nombreCategoria;
+    }
 
+    public void setNombreCategoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
+    }
+
+    public String getNombreMarca() {
+        return nombreMarca;
+    }
+
+    public void setNombreMarca(String nombreMarca) {
+        this.nombreMarca = nombreMarca;
+    }
 }
