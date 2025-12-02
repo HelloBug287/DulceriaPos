@@ -10,6 +10,8 @@ import com.dulceria.pos.modelo.Marca;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 import java.util.List;
 
 
@@ -80,4 +82,30 @@ public class ProductosController {
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
         colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
+    }
+
+    public void cargarProductos(){
+        List<Producto> list = productoDAO.listarProductos();
+        tablaProductos.getItems().clear();
+        tablaProductos.getItems().addAll(list);
+    }
+
+    // Eventos
+
+    private void configurarSeleccionTablas() {
+
+
+        tablaProductos.getSelectionModel().selectedItemProperty().addListener(
+                (observable, valorAnterior, valorNuevo) -> {
+                    if (valorNuevo != null) {
+                        productoSeleccionado = valorNuevo;
+                        txtNombre.setText(valorNuevo.getNombreProducto());
+                        comboCategoria.setValue(valorNuevo.getNombreCategoria());
+                        comboMarca.setValue(valorNuevo.getNombreMarca());
+                        txtStock.set(valorNuevo.getStock());
+                        comboUnidad.se
+
+                    }
+                }
+        );
 }
