@@ -14,4 +14,17 @@ public class Conexion {
 
         return DriverManager.getConnection(url,user,password);
     }
+
+    public static boolean probarConexion() {
+        try {
+            Connection con = getConnection();
+            if (con != null) {
+                con.close();
+                return true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
