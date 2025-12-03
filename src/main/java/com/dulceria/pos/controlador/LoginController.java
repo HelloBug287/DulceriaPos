@@ -4,6 +4,7 @@ import com.dulceria.pos.Main; // Importamos Main para usarlo como referencia en 
 import com.dulceria.pos.DAO.UsuarioDAO;
 import com.dulceria.pos.modelo.Usuario;
 
+import com.dulceria.pos.util.Conexion;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -35,6 +36,12 @@ public class LoginController {
     //Creamos un metodo para el boton Login
     @FXML
     protected void onLoginClick() {
+        if (!Conexion.probarConexion()) {
+            mostrarAlerta("Error de Conexión",
+                    "No se puede conectar al servidor. Verifica que esté encendido.",
+                    Alert.AlertType.ERROR);
+            return;
+        }
         //Obtenemos los datos ingresados de los campos de user y password
         String usernameIngresado = user.getText();
         String passwordIngresado = password.getText();
