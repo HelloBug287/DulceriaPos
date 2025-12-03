@@ -63,12 +63,13 @@ public class ProductosController {
         categoriaDAO = new CategoriaDAO();
         marcaDAO = new MarcaDAO();
 
+
         configurarTabla();
         cargarProductos();
-        // cargarCategorias();
-        // cargarMarcas();
-        // cargarUnidades();
-        // cargarSeleccionTabla
+        cargarCategorias();
+        cargarMarcas();
+        cargarUnidades();
+        cargarSeleccionTabla();
 
     }
 
@@ -93,8 +94,6 @@ public class ProductosController {
     // Eventos
 
     private void cargarSeleccionTabla() {
-
-
         tablaProductos.getSelectionModel().selectedItemProperty().addListener(
                 (observable, valorAnterior, valorNuevo) -> {
                     if (valorNuevo != null) {
@@ -102,8 +101,34 @@ public class ProductosController {
                         txtNombre.setText(valorNuevo.getNombreProducto());
                         comboCategoria.setValue(valorNuevo.getNombreCategoria());
                         comboMarca.setValue(valorNuevo.getNombreMarca());
-                        txtStock.setText(valorNuevo.
+                        txtStock.setText(String.valueOf(valorNuevo.getStock()));
+                        comboUnidad.setValue(valorNuevo.getUnidadMedida());
+                        txtPrecio.setText(String.valueOf(valorNuevo.getPrecio()));
+                        checkActivo.setSelected(valorNuevo.isActivo());
                     }
                 }
         );
+    }
+
+    private void cargarCategorias(){
+        List<Categoria> categorias = categoriaDAO.listarCategorias();
+        comboCategoria.getItems().clear();
+        for (Categoria cat : categorias){
+            comboCategoria.getItems().add(cat.getNombreCategoria());
+        }
+    }
+
+    private void cargarMarcas(){
+        List<Marca> marcas = marcaDAO.listarMarcas();
+        comboMarca.getItems().clear();
+        for (Marca m : marcas){
+            comboMarca.getItems().add(m.getNombreMarca());
+        }
+    }
+
+    private void cargarUnidades(){
+        comboUnidad.getItems().clear();
+        comboUnidad.getItems().addAll("PZA", "PQTE", "CAJA", "BOLSA");
+    }
+
 }
