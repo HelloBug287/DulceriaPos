@@ -82,7 +82,7 @@ public class ProductoDAO {
             pstm.setInt(1,id_producto);
             try (ResultSet rs = pstm.executeQuery()){
                 if (rs.next()){
-                    int idCategoria = rs.getInt("idCategoria");
+                    int idCategoria = rs.getInt("id_categoria");
                     int idMarca = rs.getInt("id_marca");
                     String nombreProducto = rs.getString("nombre_producto");
                     double precio = rs.getDouble("precio");

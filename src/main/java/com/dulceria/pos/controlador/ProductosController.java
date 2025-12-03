@@ -65,10 +65,10 @@ public class ProductosController {
 
         configurarTabla();
         cargarProductos();
-        //cargarCategorias();
-        //cargarMarcas();
-        //cargarUnidades();
-        //cargarSeleccionTabla
+        // cargarCategorias();
+        // cargarMarcas();
+        // cargarUnidades();
+        // cargarSeleccionTabla
 
     }
 
@@ -92,7 +92,7 @@ public class ProductosController {
 
     // Eventos
 
-    private void configurarSeleccionTablas() {
+    private void cargarSeleccionTabla() {
 
 
         tablaProductos.getSelectionModel().selectedItemProperty().addListener(
@@ -102,9 +102,7 @@ public class ProductosController {
                         txtNombre.setText(valorNuevo.getNombreProducto());
                         comboCategoria.setValue(valorNuevo.getNombreCategoria());
                         comboMarca.setValue(valorNuevo.getNombreMarca());
-                        txtStock.set(valorNuevo.getStock());
-                        comboUnidad.se
-
+                        txtStock.setText(valorNuevo.
                     }
                 }
         );
