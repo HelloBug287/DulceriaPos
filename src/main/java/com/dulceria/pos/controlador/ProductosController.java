@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProductosController {
 
-    // ===================== INYECCIÓN FXML =====================
+    //INYECCIÓN FXML
 
     // Formulario
     @FXML private TextField txtNombre;
@@ -23,8 +23,6 @@ public class ProductosController {
     @FXML private ComboBox<String> comboUnidad;
     @FXML private TextField txtPrecio;
     @FXML private CheckBox checkActivo;
-    @FXML private Button btnGuardar;
-    @FXML private Button btnLimpiar;
 
     // Tabla
     @FXML private TableView<Producto> tablaProductos;
@@ -39,7 +37,6 @@ public class ProductosController {
 
     // Búsqueda
     @FXML private TextField txtBuscar;
-    @FXML private Button btnBuscar;
     @FXML private ComboBox<String> comboFiltroCategoria;
     @FXML private Label lblTotalProductos;
 
@@ -353,13 +350,6 @@ public class ProductosController {
         checkActivo.setSelected(true);
         productoSeleccionado = null;
         tablaProductos.getSelectionModel().clearSelection();
-    }
-
-    @FXML
-    private void onBuscarClick() {
-        // Este método se mantiene por si el usuario prefiere hacer clic en el botón
-        // en lugar de esperar la búsqueda automática
-        aplicarFiltros();
     }
 
     // ===================== UTILIDADES =====================

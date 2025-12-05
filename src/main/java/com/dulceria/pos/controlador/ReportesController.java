@@ -20,7 +20,6 @@ public class ReportesController {
     @FXML private DatePicker dpDesde;
     @FXML private DatePicker dpHasta;
     @FXML private ComboBox<String> comboTipoReporte;
-    @FXML private Button btnGenerar;
 
     @FXML private TableView<Venta> tablaReportes;
     @FXML private TableColumn<Venta, String> colFecha;
@@ -80,7 +79,7 @@ public class ReportesController {
             return new SimpleStringProperty(nombre);
         });
 
-        // Columna Método de Pago
+        // Columna Metodo de Pago
         colMetodo.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().getMetodoPago());
         });

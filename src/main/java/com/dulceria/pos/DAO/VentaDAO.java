@@ -118,6 +118,135 @@ public class VentaDAO {
         return null;
     }
 
+    public double obtenerTotalVentasHoy() {
+        String SQL = "SELECT COALESCE(SUM(total), 0) AS total_dia " +
+                "FROM Ventas " +
+                "WHERE DATE(fecha_hora) = CURDATE()";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL);
+             ResultSet rs = pstm.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getDouble("total_dia");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+    /**
+     * Cuenta las ventas realizadas el día de hoy
+     */
+    public int contarVentasHoy() {
+        String SQL = "SELECT COUNT(*) AS cantidad " +
+                "FROM Ventas " +
+                "WHERE DATE(fecha_hora) = CURDATE()";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL);
+             ResultSet rs = pstm.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("cantidad");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Obtiene la última venta registrada (para generar siguiente folio)
+     */
+    public Venta obtenerUltimaVenta() {
+        String SQL = "SELECT * FROM Ventas ORDER BY id_venta DESC LIMIT 1";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL);
+             ResultSet rs = pstm.executeQuery()) {
+
+            if (rs.next()) {
+                int idVenta = rs.getInt("id_venta");
+                int idUsuario = rs.getInt("id_usuario");
+                Date fechaHora = rs.getTimestamp("fecha_hora");
+                String metodoPago = rs.getString("metodo_pago");
+                double subtotal = rs.getDouble("subtotal");
+                double impuestos = rs.getDouble("impuestos");
+                double total = rs.getDouble("total");
+
+                return new Venta(idVenta, idUsuario, fechaHora, metodoPago, subtotal, impuestos, total);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Lista ventas realizadas por un usuario específico
+     */
+    public List<Venta> listarVentasPorUsuario(int idUsuario) {
+        List<Venta> lista = new ArrayList<>();
+        String SQL = "SELECT * FROM Ventas WHERE id_usuario = ? ORDER BY fecha_hora DESC";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL)) {
+
+            pstm.setInt(1, idUsuario);
+
+            try (ResultSet rs = pstm.executeQuery()) {
+                while (rs.next()) {
+                    int idVenta = rs.getInt("id_venta");
+                    Date fechaHora = rs.getTimestamp("fecha_hora");
+                    String metodoPago = rs.getString("metodo_pago");
+                    double subtotal = rs.getDouble("subtotal");
+                    double impuestos = rs.getDouble("impuestos");
+                    double total = rs.getDouble("total");
+
+                    Venta v = new Venta(idVenta, idUsuario, fechaHora, metodoPago, subtotal, impuestos, total);
+                    lista.add(v);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    /**
+     * Obtiene ventas por categoría (para reportes/estadísticas)
+     */
+    public List<Object[]> obtenerVentasPorCategoria() {
+        List<Object[]> resultado = new ArrayList<>();
+        String SQL = "SELECT c.nombre_categoria, SUM(dv.importe_total) as total_ventas " +
+                "FROM Detalle_Ventas dv " +
+                "INNER JOIN Productos p ON dv.id_producto = p.id_producto " +
+                "INNER JOIN Categorias c ON p.id_categoria = c.id_categoria " +
+                "INNER JOIN Ventas v ON dv.id_venta = v.id_venta " +
+                "WHERE DATE(v.fecha_hora) = CURDATE() " +
+                "GROUP BY c.nombre_categoria";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL);
+             ResultSet rs = pstm.executeQuery()) {
+
+            while (rs.next()) {
+                String categoria = rs.getString("nombre_categoria");
+                double total = rs.getDouble("total_ventas");
+                resultado.add(new Object[]{categoria, total});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultado;
+    }
+
+
+
+
+
     // Obtener total de ventas del día (para dashboard)
 //    public double obtenerTotalVentasHoy(){
 //        String SQL = "SELECT SUM(total) AS total_dia " +

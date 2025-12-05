@@ -94,6 +94,7 @@ public class LoginController {
                         mostrarAlerta("Error de Sistema", "No se pudo cargar la ventana principal: " + ex.getMessage(), Alert.AlertType.ERROR);
                     }
                 } else {
+                    // El usuario está inactivo
                     mostrarAlerta("Acceso Denegado","Usuario Inactivo", Alert.AlertType.ERROR);
                 }
 
@@ -103,8 +104,8 @@ public class LoginController {
             }
 
         } else {
-            // El usuario está inactivo
-            mostrarAlerta("Error de Acceso", "Usuario o contraseña incorrectos.", Alert.AlertType.ERROR);
+            //el usuario no existe
+            mostrarAlerta("Error de Acceso", "El usuario Ingresado no existe.", Alert.AlertType.ERROR);
         }
     }
     // Metodo auxiliar para mostar alertas

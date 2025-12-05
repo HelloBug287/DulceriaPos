@@ -99,12 +99,11 @@
                                             </padding>
                                             <children>
                                                 <Label text="🔍" />
-                                                <TextField fx:id="txtBuscar" prefWidth="250.0" promptText="Buscar por nombre..." />
-                                                <Button fx:id="btnBuscar" onAction="#onBuscarClick" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Buscar" />
+                                                <TextField fx:id="txtBuscar" prefHeight="25.0" prefWidth="337.0" promptText="Buscar por nombre..." />
                                                 
 
                                                 <Label text="Filtrar:" />
-                                                <ComboBox fx:id="comboFiltroCategoria" prefWidth="150.0" promptText="Todas" />
+                                                <ComboBox fx:id="comboFiltroCategoria" prefHeight="25.0" prefWidth="211.0" promptText="Todas" />
                                             </children>
                                         </HBox>
                                         

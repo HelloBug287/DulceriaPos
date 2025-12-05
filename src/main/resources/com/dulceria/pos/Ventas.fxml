@@ -114,7 +114,7 @@
                                 </children>
                             </HBox>
 
-                            <Button fx:id="btnCobrar" mnemonicParsing="false" prefHeight="55.0" prefWidth="400.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;" text="COBRAR">
+                            <Button fx:id="btnCobrar" mnemonicParsing="false" onAction="#onCobrarClick" prefHeight="55.0" prefWidth="400.0" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-cursor: hand;" text="COBRAR">
                                 <font><Font name="System Bold" size="20.0" /></font>
                                 <VBox.margin><Insets top="10.0" /></VBox.margin>
                         <graphic>
@@ -128,7 +128,7 @@
 
                             <HBox spacing="10.0">
                                 <children>
-                                    <Button fx:id="btnCancelar" mnemonicParsing="false" prefWidth="185.0" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-cursor: hand;" text="Cancelar Venta">
+                                    <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#onCancelarClick" prefWidth="185.0" style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-cursor: hand;" text="Cancelar Venta">
                               <graphic>
                                  <ImageView fitHeight="20.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
                                     <image>
@@ -136,7 +136,7 @@
                                     </image>
                                  </ImageView>
                               </graphic></Button>
-                                    <Button fx:id="btnQuitar" mnemonicParsing="false" prefWidth="184.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-cursor: hand;" text="Quitar Item">
+                                    <Button fx:id="btnQuitar" mnemonicParsing="false" onAction="#onQuitarClick" prefWidth="184.0" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-cursor: hand;" text="Quitar Item">
                               <graphic>
                                  <ImageView fitHeight="20.0" fitWidth="23.0" pickOnBounds="true" preserveRatio="true">
                                     <image>

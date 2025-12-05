@@ -30,15 +30,18 @@ public class PrincipalController {
         this.usuarioActual = usuario;
         lblUsuario.setText("Usuario: " + usuario.getNombreCompleto());
 
-        // Bloqueo de botones para Cajeros (Rol 2)
+        // Bloqueo de botones para Cajeros
         if (usuario.getIdRol() == 2) {
             if(btnUsuarios != null) btnUsuarios.setDisable(true);
             if(btnProductos != null) btnProductos.setDisable(true);
             if(btnCatalogos != null) btnCatalogos.setDisable(true);
             if(btnReportes != null) btnReportes.setDisable(true);
             if(btnInicio != null) btnInicio.setDisable(true);
+            //cargamos automaticamente la vista de ventas para cajero
             onVentasClick();
         }
+        //para admin le cargamos el inicio
+        onInicioClick();
     }
 
     // Metodo para cambiar de vistas
@@ -59,7 +62,7 @@ public class PrincipalController {
         }
     }
 
-    // Acciones de los botones, utilizamos el metoo creado anteriormente para poder
+    // Acciones de los botones, utilizamos el metodo creado anteriormente para poder
 
     @FXML
     protected void onInicioClick() {
@@ -77,22 +80,13 @@ public class PrincipalController {
     }
 
     @FXML
-    protected void onUsuariosClick() {
-
-        cargarVista("/com/dulceria/pos/Usuarios.fxml");
-    }
+    protected void onUsuariosClick() {cargarVista("/com/dulceria/pos/Usuarios.fxml");}
 
     @FXML
-    protected void onReportesClick() {
-
-        cargarVista("/com/dulceria/pos/Reportes.fxml");
-    }
+    protected void onReportesClick() {cargarVista("/com/dulceria/pos/Reportes.fxml");}
 
     @FXML
-    protected void onCatalogosClick() {
-
-        cargarVista("/com/dulceria/pos/Catalogos.fxml");
-    }
+    protected void onCatalogosClick() {cargarVista("/com/dulceria/pos/Catalogos.fxml");}
 
     @FXML
     protected void onSalirClick() {
@@ -106,7 +100,7 @@ public class PrincipalController {
             stage.setResizable(false);
             stage.show();
 
-            // Cerrar actual
+            // Cerrar vista actual
             Stage myStage = (Stage) lblUsuario.getScene().getWindow();
             myStage.close();
 

@@ -184,6 +184,7 @@ public class CatalogosController {
         //verificacion por si el campo del nombre de la categoria esta vacio
         if (nombre.isEmpty()) {
             mostrarAlerta("ADVERTENCIA", "Escribe un nombre para la categoría", Alert.AlertType.WARNING); //lanzamos una alerta
+            return;
         }
 
         // si la categoria seleccionada es null quiere decir que estamos creando una nueva categoria
