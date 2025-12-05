@@ -14,7 +14,7 @@ import java.util.List;
 public class ProductoDAO {
     //metodo para crear un nuevo producto
     public Producto crearProducto(int idCategoria, int idMarca, String nombreProducto, double precio, double stock, String unidadMedida, boolean activo){
-        String SQL = "INSERT INTO productos(id_categoria, id_marca, nombre_producto, precio, stock, unidad_medida, activo) VALUES(?,?,?,?,?,?,?)"; //sentencia sql, no pedimos el id ya que la BD lo genera al ser auto incrementable
+        String SQL = "INSERT INTO Productos(id_categoria, id_marca, nombre_producto, precio, stock, unidad_medida, activo) VALUES(?,?,?,?,?,?,?)"; //sentencia sql, no pedimos el id ya que la BD lo genera al ser auto incrementable
         try (Connection conn = Conexion.getConnection();
              PreparedStatement pstm = conn.prepareStatement(SQL, PreparedStatement.RETURN_GENERATED_KEYS)){  // le decimos a nuestro prepared statemen que cuando se ejecute la sentencia SQL nos devuelva las claves (id_producto)
             // preparamos el statement para la insercion de los datos
@@ -76,7 +76,7 @@ public class ProductoDAO {
     }
 
     public Producto buscarPorId(int id_producto){
-        String SQL = "SELECT * FROM productos WHERE id_producto = ?";
+        String SQL = "SELECT * FROM vista_productos WHERE id_producto = ?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL)) {
             pstm.setInt(1,id_producto);
@@ -102,7 +102,7 @@ public class ProductoDAO {
 
     public List<Producto> buscarPorNombre(String nombre_producto){
         List <Producto> listaProductos = new ArrayList<>();
-        String SQL = "SELECT * FROM PRODUCTOS WHERE nombre_producto LIKE ?";
+        String SQL = "SELECT * FROM vista_productos WHERE nombre_producto LIKE ?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL)){
             pstm.setString(1,"%" + nombre_producto + "%");
@@ -126,7 +126,7 @@ public class ProductoDAO {
         return listaProductos;
     }
     public boolean actualizarProducto(Producto producto){
-        String SQL = "UPDATE productos " +
+        String SQL = "UPDATE Productos " +
                 "SET id_categoria=?," +
                 " id_marca=?," +
                 " nombre_producto=?," +

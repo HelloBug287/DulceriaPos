@@ -4,10 +4,12 @@ import com.dulceria.pos.DAO.CategoriaDAO;
 import com.dulceria.pos.DAO.MarcaDAO;
 import com.dulceria.pos.DAO.ProveedorDAO;
 
+// importamos modelos
 import com.dulceria.pos.modelo.Categoria;
 import com.dulceria.pos.modelo.Marca;
 import com.dulceria.pos.modelo.Proveedor;
 
+//componentes FX
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -54,7 +56,7 @@ public class CatalogosController {
     private Marca marcaSeleccionada = null;
     private Proveedor proveedorSeleccionado = null;
 
-    //Este metodo nos sirve para cuando se de click cargue automaticamente todas las propiedades necesarias para poder interactuar con ella
+    //Este metodo nos sirve para cuando demos click en la vita, automaticamente carga todas las propiedades necesarias para poder interactuar con ella
     @FXML
     public void initialize() {
         //Creamos aqui nuestras instancias de los DAO´s para que creen los objetos y de esa forma tener acceso a todos sus metodos (de los daos) para que nuestros metodos creados en este controlador puedan funcionar

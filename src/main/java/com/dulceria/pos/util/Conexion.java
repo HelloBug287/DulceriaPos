@@ -19,7 +19,7 @@ public class Conexion {
         try {
             Connection con = getConnection();
             if (con != null) {
-                con.close();
+                con.close(); //cerramos la conexion
                 return true;
             }
         } catch (SQLException e) {

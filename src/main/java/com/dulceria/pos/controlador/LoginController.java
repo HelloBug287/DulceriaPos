@@ -36,10 +36,10 @@ public class LoginController {
     //Creamos un metodo para el boton Login
     @FXML
     protected void onLoginClick() {
+
+        //llamamos a nuestro metodo probarConexion para intentar conectar con el servidor
         if (!Conexion.probarConexion()) {
-            mostrarAlerta("Error de Conexión",
-                    "No se puede conectar al servidor. Verifica que esté encendido.",
-                    Alert.AlertType.ERROR);
+            mostrarAlerta("Error de Conexión", "No se puede conectar al servidor. Intentalo mas tarde.", Alert.AlertType.ERROR);
             return;
         }
         //Obtenemos los datos ingresados de los campos de user y password
@@ -52,7 +52,7 @@ public class LoginController {
             return;
         }
 
-        // Buscamos al usuario en la BD con el metodo de  buscarPorUsername)
+        // Buscamos al usuario en la BD con el metodo de  buscarPorUsername
         Usuario usuarioEncontrado = usuarioDAO.buscarPorUsername(usernameIngresado);
 
         // Verificamos si el usuario existe
@@ -83,7 +83,7 @@ public class LoginController {
                         Stage stage = new Stage();
                         stage.setTitle("Sistema Punto de Venta - Dulcería");
                         stage.setScene(new Scene(root));
-                        stage.setResizable(false);
+                        stage.setResizable(true);
                         stage.show();
 
                         // Cerrar la ventana de Login actual
@@ -98,12 +98,12 @@ public class LoginController {
                 }
 
             } else {
-                // si el usuario existe pero ingreso mal sus credenciales lanzamos una alerta
+                // si el usuario existe, pero ingreso mal sus credenciales lanzamos una alerta
                 mostrarAlerta("Error de Acceso", "Usuario o contraseña incorrectos.", Alert.AlertType.ERROR);
             }
 
         } else {
-            // El usuario esta inactivo
+            // El usuario está inactivo
             mostrarAlerta("Error de Acceso", "Usuario o contraseña incorrectos.", Alert.AlertType.ERROR);
         }
     }

@@ -36,7 +36,7 @@
                             </children>
                         </VBox>
                         <Pane HBox.hgrow="ALWAYS" />
-                        <Button mnemonicParsing="false" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand;" text="🔄 Actualizar Datos">
+                        <Button mnemonicParsing="false" onAction="#onActualizarClick" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand;" text="🔄 Actualizar Datos">
                             <font><Font name="System Bold" size="13.0" /></font>
                         </Button>
                     </children>
