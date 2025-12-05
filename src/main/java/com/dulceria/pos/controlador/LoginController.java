@@ -46,7 +46,7 @@ public class LoginController {
         String usernameIngresado = user.getText();
         String passwordIngresado = password.getText();
 
-        //Validamos si los campos vacíos
+        //Validamos si los campos estan vacíos
         if (usernameIngresado.isEmpty() || passwordIngresado.isEmpty()) {
             mostrarAlerta("Datos Faltantes", "Por favor, escribe usuario y contraseña.", Alert.AlertType.WARNING);
             return;

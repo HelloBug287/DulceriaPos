@@ -16,23 +16,21 @@ import java.util.List;
 
 public class InicioController {
 
-    // ===================== INYECCIÓN FXML =====================
+    //Inyeccion de componentes FXML
 
     @FXML private Label lblVentasDia;
     @FXML private Label lblNumVentas;
     @FXML private Label lblStockBajo;
     @FXML private BarChart<String, Number> chartVentas;
 
-    // ===================== VARIABLES DE INSTANCIA =====================
+    // Variables de Instancia
 
     private VentaDAO ventaDAO;
     private ProductoDAO productoDAO;
     private CategoriaDAO categoriaDAO;
 
-    // Umbral para considerar stock bajo
-    private static final double STOCK_MINIMO = 10.0;
-
-    // ===================== INICIALIZACIÓN =====================
+    //variable para definir cuando mostraremos cuando un producto lance alerta de stock (en este caso 10)
+    private static final double stockMinimo = 10.0;
 
     @FXML
     public void initialize() {
@@ -44,7 +42,7 @@ public class InicioController {
         cargarGrafica();
     }
 
-    // ===================== MÉTODOS DE CARGA =====================
+    // Metodos que utilizaremos para cargarse automaticamente cuando se abra la vista
 
     private void cargarEstadisticas() {
         // Obtener fecha de hoy
@@ -77,7 +75,7 @@ public class InicioController {
         int contador = 0;
 
         for (Producto p : productos) {
-            if (p.getStock() < STOCK_MINIMO && p.isActivo()) {
+            if (p.getStock() < stockMinimo && p.isActivo()) {
                 contador++;
             }
         }
@@ -112,7 +110,7 @@ public class InicioController {
         chartVentas.getData().add(serie);
     }
 
-    // ===================== ACCIONES =====================
+    // ACCIONES
 
     @FXML
     private void onActualizarClick() {

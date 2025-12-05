@@ -56,7 +56,7 @@ public class CatalogosController {
     private Marca marcaSeleccionada = null;
     private Proveedor proveedorSeleccionado = null;
 
-    //Este metodo nos sirve para cuando demos click en la vita, automaticamente carga todas las propiedades necesarias para poder interactuar con ella
+    //Este metodo nos sirve para cuando demos click en la vista, automáticamente carga todas las propiedades necesarias para poder interactuar con ella
     @FXML
     public void initialize() {
         //Creamos aqui nuestras instancias de los DAO´s para que creen los objetos y de esa forma tener acceso a todos sus metodos (de los daos) para que nuestros metodos creados en este controlador puedan funcionar
@@ -127,9 +127,15 @@ public class CatalogosController {
         }
     }
 
-    // Eventos
-
+    // Eventos (Listener)
     private void configurarSeleccionTablas() {
+
+        /*
+        * A cada una de las tablas les agregaremos un Evento
+        * estos eventos detectan cuando el usuario hace clic en una fila de la tabla
+        * su objetivo es tomar los datos del objeto seleccionado y pasarlos al
+        * formulario  para que puedan ser editados.
+        */
 
         // Categorías
         tablaCategorias.getSelectionModel().selectedItemProperty().addListener(
@@ -171,16 +177,19 @@ public class CatalogosController {
 
     @FXML
     private void onGuardarCategoria() {
+        // obtenemos los datos del textfield y el checkBox
         String nombre = txtNombreCategoria.getText().trim();
         boolean activo = checkActivoCategoria.isSelected();
 
+        //verificacion por si el campo del nombre de la categoria esta vacio
         if (nombre.isEmpty()) {
-            mostrarAlerta("ADVERTENCIA", "Escribe un nombre para la categoría", Alert.AlertType.WARNING);
-            return;
+            mostrarAlerta("ADVERTENCIA", "Escribe un nombre para la categoría", Alert.AlertType.WARNING); //lanzamos una alerta
         }
 
+        // si la categoria seleccionada es null quiere decir que estamos creando una nueva categoria
         if (categoriaSeleccionada == null) {
 
+            // creamos una variable y mandamos a llamar a nuestro metodo del DAO
             Categoria nueva = categoriaDAO.crearCategoria(nombre);
             if (nueva != null) {
                 // Actualizar el estado activo después de crear
@@ -191,7 +200,7 @@ public class CatalogosController {
                 mostrarAlerta("Error", "No se pudo crear la categoría", Alert.AlertType.ERROR);
             }
         } else {
-            // EDITAR
+            // si la variable de categoria seleccionada es diferente de null la enviamos al formulario para editarla
             categoriaSeleccionada.setNombreCategoria(nombre);
             categoriaSeleccionada.setActivo(activo);
 
@@ -202,7 +211,7 @@ public class CatalogosController {
                 mostrarAlerta("Error", "No se pudo actualizar", Alert.AlertType.ERROR);
             }
         }
-
+        //llamamos al metodo para el mpmento de crearla podamos verla reflejada en la tabla inmediatamente y limpiamos el formulario despues de la insercion
         cargarCategorias();
         limpiarFormularioCategoria();
     }
@@ -220,7 +229,7 @@ public class CatalogosController {
     }
 
     // MARCAS para botones de acciones
-
+    //la logica es la misma que al crear una categoria
     @FXML
     private void onGuardarMarca() {
         String nombre = txtNombreMarca.getText().trim();
@@ -269,7 +278,8 @@ public class CatalogosController {
     }
 
 
-
+    //Proveedores
+    //la misma logica que los 2 anteriores
     @FXML
     private void onGuardarProveedor() {
         String nombre = txtProvNombre.getText().trim();

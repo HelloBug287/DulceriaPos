@@ -105,7 +105,7 @@ public class ProductoDAO {
         String SQL = "SELECT * FROM vista_productos WHERE nombre_producto LIKE ?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL)){
-            pstm.setString(1,"%" + nombre_producto + "%");
+            pstm.setString(1,nombre_producto + "%");
             try ( ResultSet rs = pstm.executeQuery();){
                 while (rs.next()){
                     int idProducto = rs.getInt("id_producto");
@@ -116,7 +116,11 @@ public class ProductoDAO {
                     double stock = rs.getDouble("stock");
                     String unidadMedida = rs.getString("unidad_medida");
                     boolean activo = rs.getBoolean("activo");
+                    String nombreCategoria = rs.getString("nombre_categoria");
+                    String nombreMarca = rs.getString("nombre_marca");
                     Producto p = new Producto(idProducto,idCategoria, idMarca,nombreProducto,precio , stock, unidadMedida,activo );
+                    p.setNombreCategoria(nombreCategoria);
+                    p.setNombreMarca(nombreMarca);
                     listaProductos.add(p);
                 }
             }

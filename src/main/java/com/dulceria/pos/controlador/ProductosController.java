@@ -68,7 +68,10 @@ public class ProductosController {
         cargarCategorias();
         cargarMarcas();
         cargarUnidades();
-        cargarSeleccionTabla();
+        configurarSeleccionTabla();
+
+        // Configurar búsqueda en tiempo real con filtros combinados
+        configurarBusquedaTiempoReal();
     }
 
     // ===================== CONFIGURACIÓN DE TABLA =====================
@@ -125,7 +128,7 @@ public class ProductosController {
 
     // ===================== EVENTOS DE SELECCIÓN =====================
 
-    private void cargarSeleccionTabla() {
+    private void configurarSeleccionTabla() {
         tablaProductos.getSelectionModel().selectedItemProperty().addListener(
                 (observable, valorAnterior, valorNuevo) -> {
                     if (valorNuevo != null) {
@@ -140,6 +143,81 @@ public class ProductosController {
                     }
                 }
         );
+    }
+
+    // ===================== BÚSQUEDA EN TIEMPO REAL CON FILTROS COMBINADOS =====================
+
+    /**
+     * Configura los listeners para búsqueda en tiempo real.
+     * Ambos listeners (texto y categoría) llaman al mismo método unificado
+     * para que los filtros trabajen en conjunto.
+     */
+    private void configurarBusquedaTiempoReal() {
+        // Listener para el campo de texto - cada tecla activa el filtro
+        txtBuscar.textProperty().addListener(
+                (observable, valorAnterior, valorNuevo) -> {
+                    aplicarFiltros();
+                }
+        );
+
+        // Listener para el combo de categorías - cada cambio activa el filtro
+        comboFiltroCategoria.valueProperty().addListener(
+                (observable, valorAnterior, valorNuevo) -> {
+                    aplicarFiltros();
+                }
+        );
+    }
+
+    /**
+     * Método UNIFICADO que aplica AMBOS filtros simultáneamente.
+     *
+     * Lógica:
+     * 1. Si hay texto de búsqueda → filtra por nombre usando el DAO
+     * 2. Si hay categoría seleccionada → filtra los resultados por categoría
+     * 3. Si ambos están activos → el producto debe cumplir AMBAS condiciones
+     */
+    private void aplicarFiltros() {
+        // Obtener los valores actuales de los filtros
+        String textoBusqueda = txtBuscar.getText();
+        String categoriaSeleccionada = comboFiltroCategoria.getValue();
+
+        // PASO 1: Obtener la lista base de productos
+        List<Producto> productos;
+
+        if (textoBusqueda == null || textoBusqueda.trim().isEmpty()) {
+            // Si no hay texto de búsqueda, traemos todos los productos
+            productos = productoDAO.listarProductos();
+        } else {
+            // Si hay texto, usamos el método de búsqueda por nombre del DAO
+            // Esto ya filtra en la BD usando LIKE '%texto%'
+            productos = productoDAO.buscarPorNombre(textoBusqueda.trim());
+        }
+
+        // PASO 2: Aplicar filtro de categoría sobre los resultados
+        tablaProductos.getItems().clear();
+        int contador = 0;
+
+        for (Producto p : productos) {
+            // Determinar si debemos mostrar este producto
+            boolean mostrar;
+
+            if (categoriaSeleccionada == null || categoriaSeleccionada.equals("Todas")) {
+                // No hay filtro de categoría activo, mostrar el producto
+                mostrar = true;
+            } else {
+                // Hay filtro de categoría, verificar si coincide
+                mostrar = p.getNombreCategoria().equals(categoriaSeleccionada);
+            }
+
+            // Si pasa el filtro, agregarlo a la tabla
+            if (mostrar) {
+                tablaProductos.getItems().add(p);
+                contador++;
+            }
+        }
+
+        // Actualizar el contador de productos mostrados
+        lblTotalProductos.setText(String.valueOf(contador));
     }
 
     // ===================== MÉTODOS AUXILIARES =====================
@@ -254,6 +332,10 @@ public class ProductosController {
         // 4. Refrescar tabla y limpiar formulario
         cargarProductos();
         limpiarFormulario();
+
+        // Limpiar también los filtros para mostrar todos los productos
+        txtBuscar.clear();
+        comboFiltroCategoria.setValue("Todas");
     }
 
     @FXML
@@ -275,17 +357,9 @@ public class ProductosController {
 
     @FXML
     private void onBuscarClick() {
-        String termino = txtBuscar.getText().trim();
-
-        if (termino.isEmpty()) {
-            cargarProductos(); // Si está vacío, mostrar todos
-            return;
-        }
-
-        List<Producto> resultados = productoDAO.buscarPorNombre(termino);
-        tablaProductos.getItems().clear();
-        tablaProductos.getItems().addAll(resultados);
-        lblTotalProductos.setText(String.valueOf(resultados.size()));
+        // Este método se mantiene por si el usuario prefiere hacer clic en el botón
+        // en lugar de esperar la búsqueda automática
+        aplicarFiltros();
     }
 
     // ===================== UTILIDADES =====================
@@ -298,4 +372,3 @@ public class ProductosController {
         alerta.showAndWait();
     }
 }
-

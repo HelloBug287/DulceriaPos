@@ -133,7 +133,7 @@ public class UsuariosController {
         // 2. Obtenemos datos de la vista
         String nombre = txtNombre.getText().trim();
         String username = txtUsuario.getText().trim();
-        String password = txtPassword.getText(); // Ojo: puede estar vacío en edición
+        String password = txtPassword.getText();
         String rolSeleccionado = comboRol.getValue();
         boolean activo = checkActivo.isSelected();
 
