@@ -1,5 +1,8 @@
 package com.dulceria.pos.modelo;
 
+/**
+ * Modelo DetalleVenta
+ */
 public class DetalleVenta {
     private int idDetalleVenta;
     private int idVenta;
@@ -49,7 +52,11 @@ public class DetalleVenta {
     }
 
     public void setCantidad(double cantidad) {
-        this.cantidad = cantidad;
+        if (cantidad < 0) {
+            this.cantidad = 0.0;
+        } else {
+            this.cantidad = cantidad;
+        }
     }
 
     public double getPrecioUnitarioCobrado() {
@@ -57,7 +64,11 @@ public class DetalleVenta {
     }
 
     public void setPrecioUnitarioCobrado(double precioUnitarioCobrado) {
-        this.precioUnitarioCobrado = precioUnitarioCobrado;
+        if (precioUnitarioCobrado < 0) {
+            this.precioUnitarioCobrado = 0.0;
+        } else {
+            this.precioUnitarioCobrado = precioUnitarioCobrado;
+        }
     }
 
     public double getImporteTotal() {
@@ -66,5 +77,31 @@ public class DetalleVenta {
 
     public void setImporteTotal(double importeTotal) {
         this.importeTotal = importeTotal;
+    }
+
+    @Override
+    public String toString() {
+        return "DetalleVenta{" +
+                "idDetalleVenta=" + idDetalleVenta +
+                ", idVenta=" + idVenta +
+                ", idProducto=" + idProducto +
+                ", cantidad=" + cantidad +
+                ", importeTotal=" + importeTotal +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DetalleVenta that = (DetalleVenta) o;
+
+        return idDetalleVenta == that.idDetalleVenta;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idDetalleVenta);
     }
 }

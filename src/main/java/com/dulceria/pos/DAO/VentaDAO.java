@@ -1,14 +1,19 @@
 package com.dulceria.pos.DAO;
+
 import com.dulceria.pos.modelo.Venta;
+import com.dulceria.pos.modelo.DetalleVenta;
 import com.dulceria.pos.util.Conexion;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 public class VentaDAO {
     // Crear una venta (registrar ticket)
     public Venta crearVenta(int idUsuario, String metodoPago, double subtotal, double impuestos, double total){
@@ -36,28 +41,29 @@ public class VentaDAO {
 
       // Listar todas las ventas (para reportes)
       public List<Venta> listarVentas(){
-        List<Venta> lista = new ArrayList<>();
-        String SQL = "SELECT * FROM Ventas";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement pstm = con.prepareStatement(SQL);
-             ResultSet rs = pstm.executeQuery()){
-            while (rs.next()){
-                int idVenta = rs.getInt("id_venta");
-                int idUsuario = rs.getInt("id_usuario");
-                Date fechaHora = rs.getTimestamp("fecha_hora");
-                String metodoPago = rs.getString("metodo_pago");
-                double subtotal = rs.getDouble("subtotal");
-                double impuestos = rs.getDouble("impuestos");
-                double total = rs.getDouble("total");
-                Venta v = new Venta(idVenta,idUsuario,fechaHora,metodoPago,subtotal,impuestos,total);
-                lista.add(v);
-            }
-            return lista;
-        }catch (SQLException e){
-            e.printStackTrace();
-        }
-        return null;
-    }
+      List<Venta> lista = new ArrayList<>();
+      String SQL = "SELECT * FROM Ventas";
+      try (Connection con = Conexion.getConnection();
+           PreparedStatement pstm = con.prepareStatement(SQL);
+           ResultSet rs = pstm.executeQuery()){
+          while (rs.next()){
+              int idVenta = rs.getInt("id_venta");
+              int idUsuario = rs.getInt("id_usuario");
+              Date fechaHora = rs.getTimestamp("fecha_hora");
+              String metodoPago = rs.getString("metodo_pago");
+              double subtotal = rs.getDouble("subtotal");
+              double impuestos = rs.getDouble("impuestos");
+              double total = rs.getDouble("total");
+              Venta v = new Venta(idVenta,idUsuario,fechaHora,metodoPago,subtotal,impuestos,total);
+              lista.add(v);
+          }
+          return lista;
+      }catch (SQLException e){
+          e.printStackTrace();
+      }
+      // En caso de excepción devolvemos lista vacía en lugar de null para evitar NPE en consumidores
+      return lista;
+  }
     //Buscar venta por ID (para ver detalle del ticket)
     public Venta buscarPorId(int idVenta){
         String SQL = "SELECT * FROM Ventas WHERE id_venta = ?";
@@ -115,7 +121,8 @@ public class VentaDAO {
         }catch (SQLException e){
             e.printStackTrace();
         }
-        return null;
+        // Devolver lista vacía en caso de error
+        return lista;
     }
 
     public double obtenerTotalVentasHoy() {
@@ -216,17 +223,14 @@ public class VentaDAO {
     }
 
     /**
-     * Obtiene ventas por categoría (para reportes/estadísticas)
+     * obtenerVentasPorCategoria
+     * -------------------------
+     * Antes: consulta JOIN directo filtrando por CURDATE()
+     * Ahora: usa la vista `v_ventas_por_categoria_hoy` para simplificar y acelerar la consulta.
      */
     public List<Object[]> obtenerVentasPorCategoria() {
         List<Object[]> resultado = new ArrayList<>();
-        String SQL = "SELECT c.nombre_categoria, SUM(dv.importe_total) as total_ventas " +
-                "FROM Detalle_Ventas dv " +
-                "INNER JOIN Productos p ON dv.id_producto = p.id_producto " +
-                "INNER JOIN Categorias c ON p.id_categoria = c.id_categoria " +
-                "INNER JOIN Ventas v ON dv.id_venta = v.id_venta " +
-                "WHERE DATE(v.fecha_hora) = CURDATE() " +
-                "GROUP BY c.nombre_categoria";
+        String SQL = "SELECT nombre_categoria, total_ventas FROM v_ventas_por_categoria_hoy";
 
         try (Connection con = Conexion.getConnection();
              PreparedStatement pstm = con.prepareStatement(SQL);
@@ -243,29 +247,87 @@ public class VentaDAO {
         return resultado;
     }
 
+    /**
+     * listarResumenVentasPorDia
+     * -------------------------
+     * Lee la vista `v_ventas_resumen_dia` que devuelve dia, num_ventas y total_ventas.
+     */
+    public List<Object[]> listarResumenVentasPorDia() {
+        List<Object[]> resultado = new ArrayList<>();
+        String SQL = "SELECT dia, num_ventas, total_ventas FROM v_ventas_resumen_dia ORDER BY dia DESC";
 
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL);
+             ResultSet rs = pstm.executeQuery()) {
+            while (rs.next()) {
+                java.sql.Date dia = rs.getDate("dia");
+                int numVentas = rs.getInt("num_ventas");
+                double total = rs.getDouble("total_ventas");
+                resultado.add(new Object[]{dia, numVentas, total});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return resultado;
+    }
 
+    /**
+     * listarDetalleVentaView
+     * ----------------------
+     * Obtiene los detalles de una venta usando la vista `v_venta_detalle`.
+     * Mapea los resultados al modelo DetalleVenta.
+     */
+    public List<DetalleVenta> listarDetalleVentaView(int idVenta) {
+        List<DetalleVenta> lista = new ArrayList<>();
+        String SQL = "SELECT id_detalle_venta, id_venta, id_producto, cantidad, precio_unitario_cobrado, importe_total " +
+                "FROM v_venta_detalle WHERE id_venta = ?";
 
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstm = con.prepareStatement(SQL)) {
 
-    // Obtener total de ventas del día (para dashboard)
-//    public double obtenerTotalVentasHoy(){
-//        String SQL = "SELECT SUM(total) AS total_dia " +
-//                "FROM Ventas " +
-//                "WHERE DATE(fecha_hora) = ?;";
-//        try (Connection con = Conexion.getConnection();
-//             PreparedStatement pstm = con.prepareStatement(SQL)){
-//            pstm.setDate(1,"fe");
-//
-//        }
-//    }
-//
-//    // Contar ventas del día (para dashboard)
-//    public int contarVentasHoy()
-//
-//    // Obtener última venta (para mostrar folio siguiente)
-//    public Venta obtenerUltimaVenta()
-//
-//    // Ventas por usuario (reportes por cajero)
-//    public List<Venta> listarVentasPorUsuario(int idUsuario)
+            pstm.setInt(1, idVenta);
+            try (ResultSet rs = pstm.executeQuery()) {
+                while (rs.next()) {
+                    int idDetalle = rs.getInt("id_detalle_venta");
+                    int idProd = rs.getInt("id_producto");
+                    double cantidad = rs.getDouble("cantidad");
+                    double precioUnitario = rs.getDouble("precio_unitario_cobrado");
+                    double importe = rs.getDouble("importe_total");
+
+                    DetalleVenta detalle = new DetalleVenta(idDetalle, idVenta, idProd, cantidad, precioUnitario, importe);
+                    lista.add(detalle);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    /**
+     * Crear venta usando el procedimiento almacenado sp_crear_venta_json.
+     * itemsJson formato: [{"idProducto":1,"cantidad":2.0,"precio":10.5}, ...]
+     * Retorna la venta creada con id (o null en caso de error)
+     */
+    public Venta crearVentaConProcedure(int idUsuario, String metodoPago, double subtotal, double impuestos, double total, String itemsJson) {
+        String sql = "CALL sp_crear_venta_json(?,?,?,?,?,?,?)";
+        try (Connection con = Conexion.getConnection();
+             CallableStatement cs = con.prepareCall(sql)) {
+            cs.setInt(1, idUsuario);
+            cs.setString(2, metodoPago);
+            cs.setDouble(3, subtotal);
+            cs.setDouble(4, impuestos);
+            cs.setDouble(5, total);
+            cs.setString(6, itemsJson);
+            cs.registerOutParameter(7, Types.INTEGER);
+
+            cs.execute();
+            int idVenta = cs.getInt(7);
+            return new Venta(idVenta, idUsuario, metodoPago, subtotal, impuestos, total);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

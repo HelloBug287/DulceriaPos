@@ -74,7 +74,8 @@ public class ReportesController {
 
         // Columna Cajero - buscar nombre por ID
         colCajero.setCellValueFactory(cellData -> {
-            int idUsuario = cellData.getValue().getId_Usuario();
+            // getIdUsuario() es el getter estandarizado en Venta.java
+            int idUsuario = cellData.getValue().getIdUsuario();
             String nombre = obtenerNombreUsuario(idUsuario);
             return new SimpleStringProperty(nombre);
         });
@@ -103,6 +104,7 @@ public class ReportesController {
     // ===================== MÉTODOS AUXILIARES =====================
 
     private String obtenerNombreUsuario(int idUsuario) {
+        if (listaUsuarios == null) return "Desconocido";
         for (Usuario u : listaUsuarios) {
             if (u.getIdUsuario() == idUsuario) {
                 return u.getNombreCompleto();

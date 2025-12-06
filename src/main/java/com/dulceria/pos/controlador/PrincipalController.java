@@ -62,6 +62,7 @@ public class PrincipalController {
         }
     }
 
+
     // Acciones de los botones, utilizamos el metodo creado anteriormente para poder
 
     @FXML

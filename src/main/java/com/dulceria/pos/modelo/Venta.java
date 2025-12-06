@@ -2,9 +2,12 @@ package com.dulceria.pos.modelo;
 
 import java.util.Date;
 
+/**
+ * Modelo Venta
+ */
 public class Venta {
     private  int idVenta;
-    private  int id_Usuario;
+    private  int idUsuario;
     private Date fechaHora;
     private String metodoPago;
     private double subtotal;
@@ -17,7 +20,7 @@ public class Venta {
     // con este contructor lo podemos utilizar para listar las ventas y asi poder obtener las Horas
     public Venta(int idVenta, int id_Usuario, Date fechaHora, String metodoPago, double subtotal, double impuestos, double total) {
         this.idVenta = idVenta;
-        this.id_Usuario = id_Usuario;
+        this.idUsuario = id_Usuario;
         this.fechaHora = fechaHora;
         this.metodoPago = metodoPago;
         this.subtotal = subtotal;
@@ -26,7 +29,7 @@ public class Venta {
     }
     public Venta(int idVenta, int idUsuario, String metodoPago, double subtotal, double impuestos, double total) {
         this.idVenta = idVenta;
-        this.id_Usuario = idUsuario;
+        this.idUsuario = idUsuario;
         this.metodoPago = metodoPago;
         this.subtotal = subtotal;
         this.impuestos = impuestos;
@@ -43,12 +46,12 @@ public class Venta {
         this.idVenta = idVenta;
     }
 
-    public int getId_Usuario() {
-        return id_Usuario;
+    public int getIdUsuario() {
+        return idUsuario;
     }
 
-    public void setId_Usuario(int id_Usuario) {
-        this.id_Usuario = id_Usuario;
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public Date getFechaHora() {
@@ -72,7 +75,7 @@ public class Venta {
     }
 
     public void setSubtotal(double subtotal) {
-        this.subtotal = subtotal;
+        if (subtotal < 0) this.subtotal = 0.0; else this.subtotal = subtotal;
     }
 
     public double getImpuestos() {
@@ -80,7 +83,7 @@ public class Venta {
     }
 
     public void setImpuestos(double impuestos) {
-        this.impuestos = impuestos;
+        if (impuestos < 0) this.impuestos = 0.0; else this.impuestos = impuestos;
     }
 
     public double getTotal() {
@@ -88,6 +91,31 @@ public class Venta {
     }
 
     public void setTotal(double total) {
-        this.total = total;
+        if (total < 0) this.total = 0.0; else this.total = total;
+    }
+
+    @Override
+    public String toString() {
+        return "Venta{" +
+                "idVenta=" + idVenta +
+                ", idUsuario=" + idUsuario +
+                ", fechaHora=" + fechaHora +
+                ", total=" + total +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Venta venta = (Venta) o;
+
+        return idVenta == venta.idVenta;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idVenta);
     }
 }

@@ -1,5 +1,8 @@
 package com.dulceria.pos.modelo;
 
+/**
+ * Modelo Marca
+ */
 public class Marca {
     private int idMarca;
     private String nombreMarca;
@@ -27,7 +30,11 @@ public class Marca {
     }
 
     public void setNombreMarca(String nombreMarca) {
-        this.nombreMarca = nombreMarca;
+        if (nombreMarca == null) {
+            this.nombreMarca = null;
+            return;
+        }
+        this.nombreMarca = nombreMarca.trim();
     }
 
     public boolean isActivo() {
@@ -35,5 +42,27 @@ public class Marca {
 
     public void setActivo(boolean activo) {
         this.activo = activo; }
-}
 
+    @Override
+    public String toString() {
+        return "Marca{" +
+                "idMarca=" + idMarca +
+                ", nombreMarca='" + nombreMarca + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Marca marca = (Marca) o;
+
+        return idMarca == marca.idMarca;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idMarca);
+    }
+}

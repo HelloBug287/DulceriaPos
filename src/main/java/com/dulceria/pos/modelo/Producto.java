@@ -1,5 +1,9 @@
 package com.dulceria.pos.modelo;
 
+/**
+ * Modelo Producto: representa un producto en el sistema.
+ * Cambios aplicados: validaciones simples en setters, toString(), equals() y hashCode() basados en idProducto.
+ */
 public class Producto {
     private int idProducto;
     private int idCategoria;
@@ -56,7 +60,11 @@ public class Producto {
     }
 
     public void setNombreProducto(String nombreProducto) {
-        this.nombreProducto = nombreProducto;
+        if (nombreProducto == null) {
+            this.nombreProducto = null;
+            return;
+        }
+        this.nombreProducto = nombreProducto.trim();
     }
 
     public double getStock() {
@@ -64,7 +72,11 @@ public class Producto {
     }
 
     public void setStock(double stock) {
-        this.stock = stock;
+        if (stock < 0) {
+            this.stock = 0.0;
+        } else {
+            this.stock = stock;
+        }
     }
 
     public String getUnidadMedida() {
@@ -96,7 +108,11 @@ public class Producto {
     }
 
     public void setPrecio(double precio) {
-        this.precio = precio;
+        if (precio < 0) {
+            this.precio = 0.0;
+        } else {
+            this.precio = precio;
+        }
     }
 
     public boolean isActivo() {
@@ -105,5 +121,30 @@ public class Producto {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    @Override
+    public String toString() {
+        return "Producto{" +
+                "idProducto=" + idProducto +
+                ", nombreProducto='" + nombreProducto + '\'' +
+                ", precio=" + precio +
+                ", stock=" + stock +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Producto producto = (Producto) o;
+
+        return idProducto == producto.idProducto;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idProducto);
     }
 }

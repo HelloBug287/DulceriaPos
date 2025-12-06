@@ -1,5 +1,8 @@
 package com.dulceria.pos.modelo;
 
+/**
+ * Modelo Usuario
+ */
 public class Usuario {
 
 
@@ -47,7 +50,7 @@ public class Usuario {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = (username == null) ? null : username.trim();
     }
 
     public String getPassword() {
@@ -55,7 +58,7 @@ public class Usuario {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = password; // no se aplica hashing aquí; hacerlo en capa de seguridad
     }
 
     public String getNombreCompleto() {
@@ -63,7 +66,7 @@ public class Usuario {
     }
 
     public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
+        this.nombreCompleto = (nombreCompleto == null) ? null : nombreCompleto.trim();
     }
 
     public boolean isActivo() {
@@ -80,5 +83,29 @@ public class Usuario {
 
     public void setNombreRol(String nombreRol) {
         this.nombreRol = nombreRol;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "idUsuario=" + idUsuario +
+                ", username='" + username + '\'' +
+                ", nombreCompleto='" + nombreCompleto + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Usuario usuario = (Usuario) o;
+
+        return idUsuario == usuario.idUsuario;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idUsuario);
     }
 }

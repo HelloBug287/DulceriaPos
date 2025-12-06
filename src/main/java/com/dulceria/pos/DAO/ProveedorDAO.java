@@ -32,7 +32,8 @@ public class ProveedorDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        // En caso de error devolvemos lista vacía en lugar de null para evitar NPE en controladores
+        return lista;
     }
 
     public Proveedor crearProveedor(String nombreProveedor, String telefono, String email, boolean activo){

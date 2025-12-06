@@ -1,5 +1,8 @@
 package com.dulceria.pos.modelo;
 
+/**
+ * Modelo Proveedor
+ */
 public class Proveedor {
     private int idProveedor;
     private String nombreProveedor;
@@ -31,7 +34,11 @@ public class Proveedor {
     }
 
     public void setNombreProveedor(String nombreProveedor) {
-        this.nombreProveedor = nombreProveedor;
+        if (nombreProveedor == null) {
+            this.nombreProveedor = null;
+            return;
+        }
+        this.nombreProveedor = nombreProveedor.trim();
     }
 
     public String getTelefono() {
@@ -47,7 +54,7 @@ public class Proveedor {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = (email == null) ? null : email.trim();
     }
 
     public boolean isActivo() {
@@ -56,5 +63,28 @@ public class Proveedor {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    @Override
+    public String toString() {
+        return "Proveedor{" +
+                "idProveedor=" + idProveedor +
+                ", nombreProveedor='" + nombreProveedor + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Proveedor proveedor = (Proveedor) o;
+
+        return idProveedor == proveedor.idProveedor;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(idProveedor);
     }
 }

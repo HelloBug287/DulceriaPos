@@ -2,10 +2,8 @@ package com.dulceria.pos.controlador;
 
 import com.dulceria.pos.DAO.ProductoDAO;
 import com.dulceria.pos.DAO.VentaDAO;
-import com.dulceria.pos.DAO.DetalleVentaDAO;
 import com.dulceria.pos.modelo.Producto;
 import com.dulceria.pos.modelo.Venta;
-import com.dulceria.pos.modelo.DetalleVenta;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -15,7 +13,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -24,6 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +52,6 @@ public class VentasController {
 
     private ProductoDAO productoDAO;
     private VentaDAO ventaDAO;
-    private DetalleVentaDAO detalleVentaDAO;
 
     private ObservableList<ItemCarrito> carrito;
     private List<Producto> productosDisponibles;
@@ -72,13 +69,16 @@ public class VentasController {
             // Crear instancias de DAOs
             productoDAO = new ProductoDAO();
             ventaDAO = new VentaDAO();
-            detalleVentaDAO = new DetalleVentaDAO();
 
             // Inicializar carrito
             carrito = FXCollections.observableArrayList();
 
             // Configurar componentes
             configurarTablaCarrito();
+
+            // Configurar GridPane para que tenga 3 columnas flexibles (evita que las tarjetas se corten)
+            configurarGridProductosColumns(3);
+
             cargarProductos();
             generarNuevoFolio();
             configurarBusquedaTiempoReal();
@@ -94,6 +94,17 @@ public class VentasController {
             e.printStackTrace();
             mostrarAlerta("Error", "Error al inicializar el módulo de ventas: " + e.getMessage(),
                     Alert.AlertType.ERROR);
+        }
+    }
+
+    // Añadir método para configurar columnas del GridPane
+    private void configurarGridProductosColumns(int columnas) {
+        gridProductos.getColumnConstraints().clear();
+        for (int i = 0; i < columnas; i++) {
+            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+            cc.setPercentWidth(100.0 / columnas);
+            cc.setHgrow(javafx.scene.layout.Priority.ALWAYS);
+            gridProductos.getColumnConstraints().add(cc);
         }
     }
 
@@ -128,6 +139,10 @@ public class VentasController {
         if (btnQuitar != null) {
             btnQuitar.setOnAction(event -> onQuitarClick());
         }
+        // Buscar por botón
+        if (btnBuscar != null) {
+            btnBuscar.setOnAction(e -> filtrarProductos(txtBuscarProducto.getText()));
+        }
 
         System.out.println("✅ Botones configurados con eventos");
     }
@@ -153,6 +168,10 @@ public class VentasController {
 
                 VBox tarjeta = crearTarjetaProducto(p);
                 gridProductos.add(tarjeta, columna, fila);
+                // Asegurar que la tarjeta ocupe el espacio y crezca correctamente
+                javafx.scene.layout.GridPane.setHgrow(tarjeta, javafx.scene.layout.Priority.ALWAYS);
+                javafx.scene.layout.GridPane.setVgrow(tarjeta, javafx.scene.layout.Priority.ALWAYS);
+                // ya agregado por add(...) anteriormente
                 productosActivos++;
 
                 columna++;
@@ -182,6 +201,9 @@ public class VentasController {
                 "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);");
         tarjeta.setPrefWidth(180);
         tarjeta.setPrefHeight(240);
+        tarjeta.setMinHeight(220);
+        tarjeta.setMaxWidth(Double.MAX_VALUE);
+        tarjeta.setMaxHeight(Double.MAX_VALUE);
 
         // Imagen del producto
         ImageView imagen = cargarImagenProducto(producto);
@@ -220,6 +242,15 @@ public class VentasController {
 
         tarjeta.getChildren().addAll(imagen, lblNombre, lblPrecio, btnAgregar);
 
+        // Asegurar que la tarjeta pueda crecer verticalmente dentro del GridPane
+        // Nota: no llamar VBox.setVgrow aquí porque la tarjeta no está dentro de un VBox directo que controle su crecimiento en el GridPane
+
+        // Añadir margen para separar
+        GridPane.setMargin(tarjeta, new javafx.geometry.Insets(8));
+
+        // Tooltip con precio
+        Tooltip.install(tarjeta, new Tooltip("Precio: " + String.format("$ %.2f", producto.getPrecio())));
+
         // Efectos hover
         tarjeta.setOnMouseEntered(e ->
                 tarjeta.setStyle("-fx-background-color: #ecf0f1; " +
@@ -243,7 +274,7 @@ public class VentasController {
 
         try {
             // Intentar cargar imagen por categoría
-            String nombreCategoria = producto.getNombreCategoria()
+            String nombreCategoria = (producto.getNombreCategoria() == null) ? "" : producto.getNombreCategoria()
                     .toLowerCase()
                     .replace(" ", "_")
                     .replace("á", "a")
@@ -254,14 +285,19 @@ public class VentasController {
 
             String rutaImagen = "/imagenes/productos/" + nombreCategoria + ".png";
 
-            Image imagen = new Image(getClass().getResourceAsStream(rutaImagen));
-
-            if (imagen.isError()) {
-                // Si falla, usar imagen por defecto
-                imagen = new Image(getClass().getResourceAsStream("/imagenes/productos/default.png"));
+            InputStream is = getClass().getResourceAsStream(rutaImagen);
+            if (is == null) {
+                // intentar imagen por defecto
+                is = getClass().getResourceAsStream("/imagenes/productos/default.png");
             }
 
-            imageView.setImage(imagen);
+            if (is != null) {
+                Image imagen = new Image(is);
+                imageView.setImage(imagen);
+            } else {
+                // No hay imágenes en recursos: dejar ImageView vacío
+                System.err.println("⚠️ No se encontró placeholder de imagen en recursos: " + rutaImagen);
+            }
 
         } catch (Exception e) {
             System.err.println("⚠️ No se pudo cargar imagen para: " + producto.getNombreProducto());
@@ -388,15 +424,22 @@ public class VentasController {
 
             System.out.println("💵 Método de pago: " + metodoPago);
 
-            // Calcular totales
-            double subtotal = Double.parseDouble(lblSubtotal.getText().replace("$ ", ""));
-            double impuestos = Double.parseDouble(lblImpuestos.getText().replace("$ ", ""));
-            double total = Double.parseDouble(lblTotal.getText().replace("$ ", ""));
+            // Calcular totales de forma confiable a partir del carrito (no parsear labels)
+            double subtotal = 0.0;
+            for (ItemCarrito item : carrito) {
+                subtotal += item.getImporteTotal();
+            }
+            double impuestos = subtotal * IVA;
+            double total = subtotal + impuestos;
 
-            System.out.println("📊 Totales - Subtotal: " + subtotal + ", IVA: " + impuestos + ", Total: " + total);
+            System.out.println("📊 Totales calculados - Subtotal: " + subtotal + ", IVA: " + impuestos + ", Total: " + total);
 
-            // Crear venta principal
-            Venta venta = ventaDAO.crearVenta(idUsuarioActual, metodoPago, subtotal, impuestos, total);
+            // Construir JSON de items para el procedimiento almacenado
+            String itemsJson = buildItemsJson();
+            System.out.println("🔧 Items JSON: " + itemsJson);
+
+            // Crear venta + detalles en la BD usando el procedimiento almacenado (transaccional en BD)
+            Venta venta = ventaDAO.crearVentaConProcedure(idUsuarioActual, metodoPago, subtotal, impuestos, total, itemsJson);
 
             if (venta == null) {
                 mostrarAlerta("Error", "No se pudo registrar la venta en la base de datos",
@@ -406,39 +449,15 @@ public class VentasController {
 
             System.out.println("✅ Venta creada con ID: " + venta.getIdVenta());
 
-            // Guardar detalles
-            boolean exito = true;
-            for (ItemCarrito item : carrito) {
-                DetalleVenta detalle = detalleVentaDAO.crearDetalleVenta(
-                        venta.getIdVenta(),
-                        item.getIdProducto(),
-                        item.getCantidad(),
-                        item.getPrecioUnitario(),
-                        item.getImporteTotal()
-                );
+            // Si llegamos aquí, el procedimiento y los triggers en BD deberían haber creado los detalles y actualizado stock.
+            mostrarAlerta("Venta Exitosa",
+                    "Ticket #" + venta.getIdVenta() + "\nTotal: $" + String.format("%.2f", total) +
+                            "\nMétodo: " + metodoPago,
+                    Alert.AlertType.INFORMATION);
 
-                if (detalle == null) {
-                    exito = false;
-                    System.err.println("❌ Error guardando detalle para producto ID: " + item.getIdProducto());
-                } else {
-                    System.out.println("✅ Detalle guardado: " + item.getNombreProducto());
-                }
-            }
+            System.out.println("🎉 Venta procesada exitosamente");
 
-            if (exito) {
-                mostrarAlerta("Venta Exitosa",
-                        "Ticket #" + venta.getIdVenta() + "\nTotal: $" + String.format("%.2f", total) +
-                                "\nMétodo: " + metodoPago,
-                        Alert.AlertType.INFORMATION);
-
-                System.out.println("🎉 Venta procesada exitosamente");
-
-                limpiarVenta();
-            } else {
-                mostrarAlerta("Advertencia",
-                        "La venta se registró pero hubo problemas con algunos detalles",
-                        Alert.AlertType.WARNING);
-            }
+            limpiarVenta();
 
         } catch (Exception e) {
             System.err.println("❌ Error procesando venta: " + e.getMessage());
@@ -446,6 +465,27 @@ public class VentasController {
             mostrarAlerta("Error Crítico", "Error al procesar la venta: " + e.getMessage(),
                     Alert.AlertType.ERROR);
         }
+    }
+
+    /**
+     * Construye un JSON simple (array) con los items del carrito para enviar al procedimiento almacenado.
+     * Formato: [{"idProducto":1,"cantidad":2.0,"precio":10.5}, ...]
+     * No requiere librerías externas.
+     */
+    private String buildItemsJson() {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for (int i = 0; i < carrito.size(); i++) {
+            ItemCarrito it = carrito.get(i);
+            sb.append('{');
+            sb.append("\"idProducto\":").append(it.getIdProducto()).append(',');
+            sb.append("\"cantidad\":").append(it.getCantidad()).append(',');
+            sb.append("\"precio\":").append(it.getPrecioUnitario());
+            sb.append('}');
+            if (i < carrito.size() - 1) sb.append(',');
+        }
+        sb.append(']');
+        return sb.toString();
     }
 
     private String preguntarMetodoPago() {
@@ -561,3 +601,4 @@ public class VentasController {
         }
     }
 }
+

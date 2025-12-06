@@ -71,6 +71,7 @@ public class ProductosController {
         configurarBusquedaTiempoReal();
     }
 
+
     // ===================== CONFIGURACIÓN DE TABLA =====================
 
     private void configurarTabla() {
@@ -203,7 +204,7 @@ public class ProductosController {
                 mostrar = true;
             } else {
                 // Hay filtro de categoría, verificar si coincide
-                mostrar = p.getNombreCategoria().equals(categoriaSeleccionada);
+                mostrar = p.getNombreCategoria() != null && p.getNombreCategoria().equals(categoriaSeleccionada);
             }
 
             // Si pasa el filtro, agregarlo a la tabla

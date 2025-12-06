@@ -5,7 +5,7 @@ import com.dulceria.pos.DAO.ProductoDAO;
 import com.dulceria.pos.DAO.CategoriaDAO;
 import com.dulceria.pos.modelo.Venta;
 import com.dulceria.pos.modelo.Producto;
-import com.dulceria.pos.modelo.Categoria;
+
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
@@ -45,21 +45,9 @@ public class InicioController {
     // Metodos que utilizaremos para cargarse automaticamente cuando se abra la vista
 
     private void cargarEstadisticas() {
-        // Obtener fecha de hoy
-        Date hoy = new Date();
-
-        // Ventas del día
-        List<Venta> ventasHoy = ventaDAO.listarVentasPorFecha(hoy, hoy);
-
-        double totalVentas = 0.0;
-        int numTransacciones = 0;
-
-        if (ventasHoy != null) {
-            numTransacciones = ventasHoy.size();
-            for (Venta v : ventasHoy) {
-                totalVentas += v.getTotal();
-            }
-        }
+        // Usar métodos optimizados del DAO para evitar cargar todas las ventas en memoria
+        double totalVentas = ventaDAO.obtenerTotalVentasHoy();
+        int numTransacciones = ventaDAO.contarVentasHoy();
 
         // Mostrar en labels
         lblVentasDia.setText(String.format("$ %.2f", totalVentas));
@@ -72,9 +60,11 @@ public class InicioController {
 
     private int contarProductosStockBajo() {
         List<Producto> productos = productoDAO.listarProductos();
+        if (productos == null) return 0;
         int contador = 0;
 
         for (Producto p : productos) {
+            if (p == null) continue;
             if (p.getStock() < stockMinimo && p.isActivo()) {
                 contador++;
             }
@@ -83,28 +73,38 @@ public class InicioController {
         return contador;
     }
 
+
     private void cargarGrafica() {
         // Limpiar gráfica anterior
         chartVentas.getData().clear();
 
         // Crear serie de datos
         XYChart.Series<String, Number> serie = new XYChart.Series<>();
-        serie.setName("Ventas por Categoría");
+        serie.setName("Ventas por Categoría (Hoy)");
 
-        // Obtener categorías
-        List<Categoria> categorias = categoriaDAO.listarCategorias();
-        List<Producto> productos = productoDAO.listarProductos();
+        // Obtener datos de ventas por categoría desde el DAO (consulta optimizada en BD)
+        List<Object[]> ventasPorCategoria = ventaDAO.obtenerVentasPorCategoria();
 
-        // Para cada categoría, contar productos (como ejemplo simple)
-        // En un sistema real, esto sería ventas por categoría
-        for (Categoria cat : categorias) {
-            int cantidad = 0;
-            for (Producto p : productos) {
-                if (p.getIdCategoria() == cat.getIdCategoria()) {
-                    cantidad++;
+        if (ventasPorCategoria == null || ventasPorCategoria.isEmpty()) {
+            // No hay ventas hoy: mostrar serie vacía
+            chartVentas.getData().add(serie);
+            return;
+        }
+
+        // Cada elemento es Object[]{categoria, total}
+        for (Object[] row : ventasPorCategoria) {
+            String categoria = row[0] != null ? row[0].toString() : "Sin categoría";
+            Number total = 0;
+            if (row[1] instanceof Number) {
+                total = (Number) row[1];
+            } else if (row[1] != null) {
+                try {
+                    total = Double.parseDouble(row[1].toString());
+                } catch (NumberFormatException ex) {
+                    total = 0;
                 }
             }
-            serie.getData().add(new XYChart.Data<>(cat.getNombreCategoria(), cantidad));
+            serie.getData().add(new XYChart.Data<>(categoria, total));
         }
 
         chartVentas.getData().add(serie);
