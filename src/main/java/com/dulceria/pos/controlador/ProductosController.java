@@ -309,6 +309,12 @@ public class ProductosController {
         boolean activo = checkActivo.isSelected();
 
         if (productoSeleccionado == null) {
+            // VALIDACIÓN ADICIONAL: no permitir crear con stock o precio <= 0
+            if (stock <= 0 || precio <= 0) {
+                mostrarAlerta("Cuidado", "No se puede crear el producto: el stock y el precio deben ser mayores que 0.", Alert.AlertType.WARNING);
+                return;
+            }
+
             // CREAR nuevo producto
             Producto nuevo = productoDAO.crearProducto(idCategoria, idMarca, nombre, precio, stock, unidad, activo);
             if (nuevo != null) {
@@ -317,6 +323,12 @@ public class ProductosController {
                 mostrarAlerta("Error", "No se pudo crear el producto", Alert.AlertType.ERROR);
             }
         } else {
+            // VALIDACIÓN ADICIONAL AL EDITAR: no permitir actualizar a stock o precio <= 0
+            if (stock <= 0 || precio <= 0) {
+                mostrarAlerta("Cuidado", "No se puede actualizar el producto: el stock y el precio deben ser mayores que 0.", Alert.AlertType.WARNING);
+                return;
+            }
+
             // EDITAR producto existente
             productoSeleccionado.setNombreProducto(nombre);
             productoSeleccionado.setIdCategoria(idCategoria);
