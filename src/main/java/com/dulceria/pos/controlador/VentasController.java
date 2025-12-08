@@ -174,8 +174,9 @@ public class VentasController {
             int productosActivos = 0;
 
             for (Producto p : productosDisponibles) {
-                // Ya vienen filtrados por el DAO, pero validación extra
-                if (!p.isActivo()) {
+                // Validación extra: ignorar productos con precio o stock inválido
+                if (!p.isActivo() || p.getPrecio() < 0 || p.getStock() < 0) {
+                    System.err.println("Producto omitido por datos inválidos: ID " + p.getIdProducto());
                     continue;
                 }
 
@@ -233,9 +234,14 @@ public class VentasController {
         lblNombre.setMaxHeight(35);
 
         // Precio
-        Label lblPrecio = new Label(String.format("$%.2f", producto.getPrecio()));
+        String precioText = (producto.getPrecio() < 0) ? "Precio inválido" : String.format("$%.2f", producto.getPrecio());
+        Label lblPrecio = new Label(precioText);
         lblPrecio.setFont(Font.font("System", FontWeight.BOLD, 16));
-        lblPrecio.setTextFill(Color.web("#27ae60"));
+        lblPrecio.setTextFill(producto.getPrecio() < 0 ? Color.web("#c0392b") : Color.web("#27ae60"));
+
+        // Estado (precio inválido / agotado / stock)
+        Label lblEstado = new Label();
+        lblEstado.setFont(Font.font(11));
 
         // Botón agregar
         Button btnAgregar = new Button("➕ Agregar");
@@ -247,19 +253,34 @@ public class VentasController {
         btnAgregar.setPrefWidth(140);
         btnAgregar.setPrefHeight(28);
 
+        boolean precioInvalido = producto.getPrecio() < 0;
+        boolean sinStock = producto.getStock() <= 0;
+
+        if (precioInvalido) {
+            lblEstado.setText("Precio inválido");
+            lblEstado.setTextFill(Color.web("#c0392b"));
+            btnAgregar.setDisable(true);
+        } else if (sinStock) {
+            lblEstado.setText("Agotado");
+            lblEstado.setTextFill(Color.web("#e67e22"));
+            btnAgregar.setDisable(true);
+        } else {
+            lblEstado.setText("Stock: " + producto.getStock());
+            lblEstado.setTextFill(Color.web("#34495e"));
+            btnAgregar.setDisable(false);
+        }
+
         btnAgregar.setOnAction(event -> {
             agregarAlCarrito(producto);
         });
 
-        tarjeta.getChildren().addAll(imagen, lblNombre, lblPrecio, btnAgregar);
-
-        // Asegurar que la tarjeta pueda crecer verticalmente dentro del GridPane
+        tarjeta.getChildren().addAll(imagen, lblNombre, lblPrecio, lblEstado, btnAgregar);
 
         // Añadir margen para separar
         GridPane.setMargin(tarjeta, new javafx.geometry.Insets(8));
 
         // Tooltip con precio
-        Tooltip.install(tarjeta, new Tooltip("Precio: " + String.format("$ %.2f", producto.getPrecio())));
+        Tooltip.install(tarjeta, new Tooltip("Precio: " + (producto.getPrecio() < 0 ? "N/A" : String.format("$ %.2f", producto.getPrecio()))));
 
         // Efectos hover
         tarjeta.setOnMouseEntered(e ->
@@ -267,14 +288,14 @@ public class VentasController {
                         "-fx-background-radius: 10; " +
                         "-fx-padding: 15; " +
                         "-fx-cursor: hand; " +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);"));
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 8, 0, 0, 3);") );
 
         tarjeta.setOnMouseExited(e ->
                 tarjeta.setStyle("-fx-background-color: white; " +
                         "-fx-background-radius: 10; " +
                         "-fx-padding: 15; " +
                         "-fx-cursor: hand; " +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);"));
+                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);") );
 
         return tarjeta;
     }
@@ -358,7 +379,8 @@ public class VentasController {
         int productosPorFila = 3;
 
         for (Producto p : productosFiltrados) {
-            if (!p.isActivo()) continue;
+            // Filtrar productos inválidos
+            if (!p.isActivo() || p.getPrecio() < 0 || p.getStock() < 0) continue;
 
             VBox tarjeta = crearTarjetaProducto(p);
             gridProductos.add(tarjeta, columna, fila);
@@ -379,16 +401,39 @@ public class VentasController {
      */
     private void agregarAlCarrito(Producto producto) {
         try {
-            ItemCarrito itemExistente = buscarEnCarrito(producto.getIdProducto());
+            // Validar precio y stock directamente contra la BD para evitar estados obsoletos
+            Producto prodActual = productoDAO.buscarPorId(producto.getIdProducto());
+            if (prodActual == null) {
+                mostrarAlerta("Error", "Producto no encontrado.", Alert.AlertType.ERROR);
+                return;
+            }
+            if (prodActual.getPrecio() < 0) {
+                mostrarAlerta("Precio inválido", "Este producto tiene un precio inválido y no se puede vender.", Alert.AlertType.WARNING);
+                return;
+            }
+            if (prodActual.getStock() <= 0) {
+                mostrarAlerta("Sin stock", "No hay stock disponible para: " + prodActual.getNombreProducto(), Alert.AlertType.WARNING);
+                return;
+            }
+
+            ItemCarrito itemExistente = buscarEnCarrito(prodActual.getIdProducto());
 
             if (itemExistente != null) {
-                itemExistente.setCantidad(itemExistente.getCantidad() + 1);
-                tablaCarrito.refresh();
+                int nuevaCantidad = itemExistente.getCantidad() + 1;
+                if (nuevaCantidad > prodActual.getStock()) {
+                    // prodActual.getStock() puede ser double; asegurar conversión a int
+                    itemExistente.setCantidad((int) Math.floor(prodActual.getStock())); // ajustar al máximo disponible
+                    tablaCarrito.refresh();
+                    mostrarAlerta("Stock limitado", "Se ajustó la cantidad al stock disponible (" + prodActual.getStock() + ") para " + prodActual.getNombreProducto(), Alert.AlertType.INFORMATION);
+                } else {
+                    itemExistente.setCantidad(nuevaCantidad);
+                    tablaCarrito.refresh();
+                }
             } else {
                 ItemCarrito nuevoItem = new ItemCarrito(
-                        producto.getIdProducto(),
-                        producto.getNombreProducto(),
-                        producto.getPrecio(),
+                        prodActual.getIdProducto(),
+                        prodActual.getNombreProducto(),
+                        prodActual.getPrecio(),
                         1
                 );
                 carrito.add(nuevoItem);
@@ -452,11 +497,15 @@ public class VentasController {
             double total = subtotal + impuestos;
 
 
-            // VALIDACIÓN PREVIA: verificar stock disponible para cada item en el carrito
+            // VALIDACIÓN PREVIA: verificar stock disponible y precio válido para cada item en el carrito
             for (ItemCarrito item : carrito) {
                 Producto prod = productoDAO.buscarPorId(item.getIdProducto());
                 if (prod == null) {
                     mostrarAlerta("Error", "Producto no existe: ID " + item.getIdProducto(), Alert.AlertType.ERROR);
+                    return;
+                }
+                if (prod.getPrecio() < 0) {
+                    mostrarAlerta("Precio inválido", "El producto '" + prod.getNombreProducto() + "' tiene un precio inválido.", Alert.AlertType.WARNING);
                     return;
                 }
                 if (prod.getStock() < item.getCantidad()) {
@@ -527,6 +576,10 @@ public class VentasController {
         sb.append('[');
         for (int i = 0; i < carrito.size(); i++) {
             ItemCarrito it = carrito.get(i);
+            // Asegurar integridad: omitir o lanzar si hay datos inválidos (debería haber sido validado arriba)
+            if (it.getCantidad() <= 0 || it.getPrecioUnitario() < 0) {
+                continue; // no incluir items inválidos
+            }
             sb.append('{');
             sb.append("\"idProducto\":").append(it.getIdProducto()).append(',');
             sb.append("\"cantidad\":").append(it.getCantidad()).append(',');
@@ -642,6 +695,7 @@ public class VentasController {
         public double getImporteTotal() { return importeTotal; }
 
         public void setCantidad(int cantidad) {
+            if (cantidad < 0) cantidad = 0;
             this.cantidad = cantidad;
             calcularImporte();
         }
