@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: #f0f2f5;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dulceria.pos.controlador.InicioController">
+    <children>
+        <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+
+                <HBox alignment="CENTER_LEFT">
+                    <children>
+                        <VBox>
+                            <children>
+                                <Label text="Resumen del Día" textFill="#555555">
+                                    <font><Font name="System Bold" size="26.0" /></font>
+                                </Label>
+                                <Label text="Estadísticas en tiempo real" textFill="#888888">
+                                    <font><Font size="14.0" /></font>
+                                </Label>
+                            </children>
+                        </VBox>
+                        <Pane HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#onActualizarClick" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand;" text="🔄 Actualizar Datos">
+                            <font><Font name="System Bold" size="13.0" /></font>
+                        </Button>
+                    </children>
+                </HBox>
+
+                <HBox spacing="20.0">
+                    <children>
+                        <AnchorPane prefHeight="140.0" prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+                            <effect>
+                                <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                            </effect>
+                            <children>
+                                <Label layoutX="20.0" layoutY="20.0" text="Ventas Totales (Hoy)" textFill="#7c7c7c">
+                                    <font><Font size="16.0" /></font>
+                           <graphic>
+                              <ImageView fitHeight="44.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../imagenes/iconos/money.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                                </Label>
+                                <Label fx:id="lblVentasDia" layoutX="20.0" layoutY="55.0" text="\$ 0.00" textFill="#27ae60">
+                                    <font><Font name="System Bold" size="40.0" /></font>
+                                </Label>
+                                <Label layoutX="20.0" layoutY="105.0" text="Corte al momento" textFill="#bbbbbb">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                            </children>
+                        </AnchorPane>
+
+                        <AnchorPane prefHeight="140.0" prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+                            <effect>
+                                <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                            </effect>
+                            <children>
+                                <Label layoutX="20.0" layoutY="20.0" text="Transacciones" textFill="#7c7c7c">
+                                    <font><Font size="16.0" /></font>
+                           <graphic>
+                              <ImageView fitHeight="44.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../imagenes/iconos/financial-profit.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                                </Label>
+                                <Label fx:id="lblNumVentas" layoutX="20.0" layoutY="55.0" text="0" textFill="#2980b9">
+                                    <font><Font name="System Bold" size="40.0" /></font>
+                                </Label>
+                                <Label layoutX="20.0" layoutY="105.0" text="Tickets emitidos hoy" textFill="#bbbbbb">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                            </children>
+                        </AnchorPane>
+
+                        <AnchorPane prefHeight="140.0" prefWidth="300.0" style="-fx-background-color: white; -fx-background-radius: 10;" HBox.hgrow="ALWAYS">
+                            <effect>
+                                <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                            </effect>
+                            <children>
+                                <Label layoutX="20.0" layoutY="20.0" text="Alertas de Stock" textFill="#7c7c7c">
+                                    <font><Font size="16.0" /></font>
+                           <graphic>
+                              <ImageView fitHeight="44.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../imagenes/iconos/warning.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                                </Label>
+                                <Label fx:id="lblStockBajo" layoutX="20.0" layoutY="55.0" text="0" textFill="#c0392b">
+                                    <font><Font name="System Bold" size="40.0" /></font>
+                                </Label>
+                                <Label layoutX="20.0" layoutY="105.0" text="Productos por agotarse" textFill="#bbbbbb">
+                                    <font><Font size="12.0" /></font>
+                                </Label>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </HBox>
+
+                <AnchorPane style="-fx-background-color: white; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
+                    <effect>
+                        <DropShadow color="#0000001a" height="15.0" radius="7.0" width="15.0" />
+                    </effect>
+                    <children>
+                        <Label layoutX="20.0" layoutY="15.0" text="Rendimiento por Categoría" textFill="#555555">
+                            <font><Font name="System Bold" size="18.0" /></font>
+                        </Label>
+
+                        <BarChart fx:id="chartVentas" animated="false" layoutX="20.0" layoutY="50.0" legendVisible="false" prefHeight="350.0" prefWidth="1000.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+                            <xAxis>
+                                <CategoryAxis label="Categoría" side="BOTTOM" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Ventas ($)" side="LEFT" />
+                            </yAxis>
+                        </BarChart>
+                    </children>
+                </AnchorPane>
+
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

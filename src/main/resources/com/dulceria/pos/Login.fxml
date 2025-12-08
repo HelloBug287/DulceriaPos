@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #8B0000;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.dulceria.pos.controlador.LoginController">
+   <children>
+      <AnchorPane layoutX="386.0" prefHeight="400.0" prefWidth="320.0" style="-fx-background-color: #B22222;">
+         <children>
+            <TextField fx:id="user" layoutX="57.0" layoutY="121.0" prefHeight="32.0" prefWidth="223.0" promptText="Username" style="-fx-background-color: #E45652; -fx-text-fill: white; -fx-border-color: white;">
+               <effect>
+                  <InnerShadow choke="0.49" height="11.97" radius="2.4925" width="0.0">
+                     <color>
+                        <Color red="0.9882352948188782" green="0.9098039269447327" blue="0.9098039269447327" />
+                     </color>
+                  </InnerShadow>
+               </effect>
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </TextField>
+            <PasswordField fx:id="password" layoutX="57.0" layoutY="193.0" prefHeight="32.0" prefWidth="223.0" promptText="Password" style="-fx-background-color: #E45652; -fx-text-fill: White; -fx-border-color: White;">
+               <effect>
+                  <InnerShadow choke="0.49" height="11.97" radius="2.4925" width="0.0">
+                     <color>
+                        <Color red="0.9882352948188782" green="0.9098039269447327" blue="0.9098039269447327" />
+                     </color>
+                  </InnerShadow>
+               </effect>
+               <font>
+                  <Font name="Arial" size="13.0" />
+               </font>
+            </PasswordField>
+            <Button fx:id="login" layoutX="57.0" layoutY="278.0" mnemonicParsing="false" onAction="#onLoginClick" prefHeight="25.0" prefWidth="223.0" style="-fx-background-color: #E45652;" text="Acceder" textAlignment="CENTER" textFill="#f8f8f8">
+               <effect>
+                  <DropShadow height="26.87" radius="12.2025" width="23.94" />
+               </effect>
+               <font>
+                  <Font name="Arial Bold" size="13.0" />
+               </font>
+            </Button>
+            <Label layoutX="110.0" layoutY="46.0" text="Iniciar Sesión" textAlignment="CENTER" textFill="WHITE" underline="true">
+               <font>
+                  <Font name="Arial Bold" size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <ImageView fitHeight="357.0" fitWidth="342.0" layoutX="26.0" layoutY="21.0" opacity="0.22" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../imagenes/iconos/Fondo.jpg" />
+         </image>
+      </ImageView>
+      <Label layoutX="82.0" layoutY="41.0" prefHeight="32.0" prefWidth="247.0" text="        Bienvenidos" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+         <font>
+            <Font name="Arial Italic" size="24.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="169.0" fitWidth="177.0" layoutX="121.0" layoutY="95.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../imagenes/iconos/Logo.jpeg" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>
